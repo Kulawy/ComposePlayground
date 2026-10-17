@@ -1,4 +1,4 @@
-package com.jakger.composeplaygroudmobile.ui.theme
+package com.jakger.core_designsystem.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,4 +1,4 @@
-package com.jakger.googlemaps.ui
+package com.jakger.googlemaps.ui.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text

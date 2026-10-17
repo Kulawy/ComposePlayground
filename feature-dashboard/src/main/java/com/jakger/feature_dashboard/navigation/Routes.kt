@@ -1,4 +1,4 @@
-package com.jakger.composeplaygroudmobile.navigation
+package com.jakger.feature_dashboard.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable

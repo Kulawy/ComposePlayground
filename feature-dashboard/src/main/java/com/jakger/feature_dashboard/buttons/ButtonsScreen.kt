@@ -1,4 +1,4 @@
-package com.jakger.composeplaygroudmobile.ui
+package com.jakger.feature_dashboard.buttons
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -8,9 +8,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.jakger.feature_dashboard.home.HomeViewModel
 
 @Composable
-fun ButtonsScreen() {
+fun ButtonsScreen(
+    val viewModel: HomeViewModel = hiltViewModel()
+) {
 
     Scaffold { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {

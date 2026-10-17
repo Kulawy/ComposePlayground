@@ -13,7 +13,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.runtime.result.rememberResultEventBusNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.jakger.composeplaygroudmobile.ui.theme.ComposePlaygroundTheme
+import com.jakger.core_designsystem.ui.theme.ComposePlaygroundTheme
 import com.jakger.core_arch.navi.NavigationEntries
 
 @Composable

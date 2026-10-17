@@ -1,4 +1,4 @@
-package com.jakger.googlemaps.ui
+package com.jakger.googlemaps.ui.main
 
 import androidx.compose.runtime.Stable
 import com.jakger.core_arch.mvi.UiState
