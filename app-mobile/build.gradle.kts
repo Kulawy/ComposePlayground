@@ -42,7 +42,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
-//    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -50,6 +49,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
 //    implementation(libs.androidx.navigation.common.ktx)
+    //    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 
     //HILT
     implementation(libs.dagger.hilt.android)
@@ -72,7 +72,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     //MODULES
-    implementation(project(":feature-googlemaps-api"))
+    implementation(project(":feature-googlemaps"))
+    implementation(project(":feature-dashboard"))
+    implementation(project(":feature-dashboard-api"))
     implementation(project(":core-designsystem"))
     implementation(project(":core-arch"))
 }

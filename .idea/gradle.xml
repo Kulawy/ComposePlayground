@@ -10,10 +10,10 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app-mobile" />
-            <option value="$PROJECT_DIR$/app-mobile/feature-dashboard-api" />
             <option value="$PROJECT_DIR$/core-arch" />
             <option value="$PROJECT_DIR$/core-designsystem" />
             <option value="$PROJECT_DIR$/feature-dashboard" />
+            <option value="$PROJECT_DIR$/feature-dashboard-api" />
             <option value="$PROJECT_DIR$/feature-googlemaps" />
             <option value="$PROJECT_DIR$/feature-googlemaps-api" />
             <option value="$PROJECT_DIR$/feature-openstreetmaps" />

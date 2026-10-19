@@ -15,12 +15,13 @@ import androidx.navigation3.runtime.result.rememberResultEventBusNavEntryDecorat
 import androidx.navigation3.ui.NavDisplay
 import com.jakger.core_designsystem.ui.theme.ComposePlaygroundTheme
 import com.jakger.core_arch.navi.NavigationEntries
+import com.jakger.feature_dashboard_api.DashboardNavigationFlow
 
 @Composable
 fun NavigationRoot(
     features: Set<NavigationEntries>
 ) {
-    val backStack = rememberNavBackStack(Home)
+    val backStack = rememberNavBackStack(DashboardNavigationFlow.Home)
 
     val provider = remember(features) {
         entryProvider<NavKey> {
@@ -44,16 +45,6 @@ fun NavigationRoot(
                     rememberResultEventBusNavEntryDecorator(),
                 ),
                 entryProvider = provider
-//                entryProvider = entryProvider {
-//                    entry<Home> {
-//                        HomeScreen(
-//                            backStack = backStack
-//                        )
-//                    }
-//                    entry<Buttons> {
-//                        ButtonsScreen()
-//                    }
-//                },
             )
         }
     }

@@ -8,18 +8,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.jakger.feature_dashboard.home.HomeViewModel
 
 @Composable
-fun ButtonsScreen(
-    val viewModel: HomeViewModel = hiltViewModel()
-) {
+fun ButtonsScreen() {
 
     Scaffold { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             Button(onClick = {}) {
-                Text(text = "dawd")
+                Text(text = "Sample Button")
             }
         }
     }

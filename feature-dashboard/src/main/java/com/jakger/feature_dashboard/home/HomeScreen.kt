@@ -15,12 +15,10 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
-import com.jakger.composeplaygroudmobile.navigation.Buttons
-import com.jakger.composeplaygroudmobile.navigation.Home
-import com.jakger.composeplaygroudmobile.ui.theme.ComposePlaygroundTheme
+import com.jakger.core_designsystem.ui.theme.ComposePlaygroundTheme
+import com.jakger.feature_dashboard.R
+import com.jakger.feature_dashboard_api.DashboardNavigationFlow
 import com.jakger.feature_googlemaps_api.GoogleMapsNavFlow
-import kotlin.Pair
-import kotlin.String
 
 @Composable
 fun HomeScreen(
@@ -32,7 +30,7 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val items = listOf<kotlin.Pair<kotlin.String, NavKey>>(
-            stringResource(R.string.buttons_title) to Buttons,
+            stringResource(R.string.buttons_title) to DashboardNavigationFlow.Buttons,
             stringResource(R.string.googlemaps_title) to GoogleMapsNavFlow.GoogleMapsMainRoute
         )
         items.forEach { (title, route) ->
@@ -56,6 +54,6 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     ComposePlaygroundTheme {
-        HomeScreen(backStack = rememberNavBackStack(Home))
+        HomeScreen(backStack = rememberNavBackStack(DashboardNavigationFlow.Home))
     }
 }

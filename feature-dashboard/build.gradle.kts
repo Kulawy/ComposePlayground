@@ -18,15 +18,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
     implementation(project(":core-arch"))
     implementation(project(":core-designsystem"))
+    implementation(project(":feature-dashboard-api"))
+    implementation(project(":feature-googlemaps-api"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.appcompat)

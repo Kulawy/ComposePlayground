@@ -8,5 +8,4 @@ sealed class GoogleMapsNavFlow : NavKey {
 
     @Serializable
     data object GoogleMapsMainRoute : GoogleMapsNavFlow()
-
 }
