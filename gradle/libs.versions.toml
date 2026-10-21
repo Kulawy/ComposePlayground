@@ -23,6 +23,8 @@ jetbrainsKotlinJvm = "2.4.20"
 navigationCompose = "2.10.2"
 hiltViewModelComposeVersion = "1.4.0"
 navigation3RuntimeAndroid = "1.2.0"
+osmVersion = "6.1.20"
+mapLibreVersion = "0.20.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +60,11 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-navigation3-runtime-android = { group = "androidx.navigation3", name = "navigation3-runtime-android", version.ref = "navigation3RuntimeAndroid" }
+
+#MAPS
+#open-street-maps = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmVersion"}
+maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "mapLibreVersion" }
+maplibre-compose-runtime-opengl = { group = "org.maplibre.compose", name = "maplibre-compose-runtime-opengl-android", version.ref = "mapLibreVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

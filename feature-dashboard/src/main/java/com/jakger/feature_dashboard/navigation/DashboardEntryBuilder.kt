@@ -3,6 +3,7 @@ package com.jakger.feature_dashboard.navigation
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.jakger.core_arch.navi.AppNavigator
 import com.jakger.core_arch.navi.NavigationEntries
 import com.jakger.feature_dashboard.buttons.ButtonsScreen
 import com.jakger.feature_dashboard.home.HomeScreen
@@ -23,12 +24,11 @@ import javax.inject.Inject
 class DashboardEntries @Inject constructor() : NavigationEntries {
     override fun install(
         scope: EntryProviderScope<NavKey>,
-        backStack: NavBackStack<NavKey>
-//        navigator: AppNavigator,
+        navigator: AppNavigator,
     ) = with(scope) {
         entry<DashboardNavigationFlow.Home> { key ->
             HomeScreen(
-                backStack = backStack
+                navigator
             )
         }
         entry<DashboardNavigationFlow.Buttons> { key ->

@@ -7,6 +7,6 @@ import androidx.navigation3.runtime.NavKey
 interface NavigationEntries {
     fun install(
         scope: EntryProviderScope<NavKey>,
-        backStack: NavBackStack<NavKey>
+        navigator: AppNavigator
     )
 }

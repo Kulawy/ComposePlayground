@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":core-designsystem"))
     implementation(project(":feature-dashboard-api"))
     implementation(project(":feature-googlemaps-api"))
+    implementation(project(":feature-maplibremaps-api"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.appcompat)

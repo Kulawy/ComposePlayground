@@ -73,6 +73,7 @@ dependencies {
 
     //MODULES
     implementation(project(":feature-googlemaps"))
+    implementation(project(":feature-maplibremaps"))
     implementation(project(":feature-dashboard"))
     implementation(project(":feature-dashboard-api"))
     implementation(project(":core-designsystem"))

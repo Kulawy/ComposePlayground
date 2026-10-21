@@ -16,8 +16,8 @@
             <option value="$PROJECT_DIR$/feature-dashboard-api" />
             <option value="$PROJECT_DIR$/feature-googlemaps" />
             <option value="$PROJECT_DIR$/feature-googlemaps-api" />
-            <option value="$PROJECT_DIR$/feature-openstreetmaps" />
-            <option value="$PROJECT_DIR$/feature-openstreetmaps-api" />
+            <option value="$PROJECT_DIR$/feature-maplibremaps" />
+            <option value="$PROJECT_DIR$/feature-maplibremaps-api" />
           </set>
         </option>
       </GradleProjectSettings>

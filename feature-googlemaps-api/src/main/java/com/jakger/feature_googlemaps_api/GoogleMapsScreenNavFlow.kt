@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 sealed class GoogleMapsNavFlow : NavKey {
 
     @Serializable
-    data object GoogleMapsMainRoute : GoogleMapsNavFlow()
+    data object Main : GoogleMapsNavFlow()
 }
