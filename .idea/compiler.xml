@@ -5,6 +5,9 @@
       <module name="ComposePlayground.core-architecture" target="17" />
       <module name="ComposePlayground.core-architecture.main" target="17" />
       <module name="ComposePlayground.core-architecture.test" target="17" />
+      <module name="ComposePlayground.feature-googlemaps-api" target="17" />
+      <module name="ComposePlayground.feature-googlemaps-api.main" target="17" />
+      <module name="ComposePlayground.feature-googlemaps-api.test" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

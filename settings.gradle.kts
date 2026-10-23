@@ -24,8 +24,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "ComposePlayground"
 include(":app-mobile")
-include(":feature-googlemaps")
-include(":feature-googlemaps-api")
+include(":feature-ghcrange-mobile")
+include(":feature-ghcrange-mobile-api")
 include(":core-designsystem")
 include(":feature-maplibremaps")
 include(":feature-maplibremaps-api")

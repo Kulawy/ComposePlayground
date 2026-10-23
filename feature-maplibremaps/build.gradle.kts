@@ -28,6 +28,7 @@ android {
 
 dependencies {
     implementation(project(":core-arch"))
+    implementation(project(":core-designsystem"))
     implementation(project(":feature-maplibremaps-api"))
 
     implementation(platform(libs.androidx.compose.bom))
@@ -54,6 +55,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
 
     implementation(libs.maplibre.compose)
+    implementation(libs.maplibre.composeMaterial3)
     runtimeOnly(libs.maplibre.compose.runtime.opengl)
 
     testImplementation(libs.junit)

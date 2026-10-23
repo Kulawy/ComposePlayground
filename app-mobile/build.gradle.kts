@@ -70,9 +70,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(project(":feature-ghcrange-mobile"))
 
     //MODULES
-    implementation(project(":feature-googlemaps"))
     implementation(project(":feature-maplibremaps"))
     implementation(project(":feature-dashboard"))
     implementation(project(":feature-dashboard-api"))

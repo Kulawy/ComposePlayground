@@ -25,6 +25,7 @@ hiltViewModelComposeVersion = "1.4.0"
 navigation3RuntimeAndroid = "1.2.0"
 osmVersion = "6.1.20"
 mapLibreVersion = "0.20.0"
+healthConnectVersion = "1.2.0-alpha06"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -64,7 +65,11 @@ androidx-navigation3-runtime-android = { group = "androidx.navigation3", name = 
 #MAPS
 #open-street-maps = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmVersion"}
 maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "mapLibreVersion" }
+maplibre-composeMaterial3 = { module = "org.maplibre.compose:maplibre-compose-material3", version.ref = "mapLibreVersion" }
 maplibre-compose-runtime-opengl = { group = "org.maplibre.compose", name = "maplibre-compose-runtime-opengl-android", version.ref = "mapLibreVersion" }
+
+# Google health connect
+healt-connect-client = { group = "androidx.health.connect", name = "connect-client", version.ref = "healthConnectVersion"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

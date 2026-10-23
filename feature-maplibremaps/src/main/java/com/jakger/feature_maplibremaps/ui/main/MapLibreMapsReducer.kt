@@ -11,7 +11,22 @@ class MapLibreMapsReducer @Inject constructor() :
     override fun invoke(
         event: UiEvent,
         state: UiState
-    ): Pair<MapLibreUiState, MapLibreUiSideEffect> {
-        TODO("Not yet implemented")
+    ): Pair<MapLibreUiState, MapLibreUiSideEffect> =
+        when (state) {
+            is MapLibreUiState.View -> state.reduce(event)
+            else -> MapLibreUiState.Error to MapLibreUiSideEffect.None
+        }
+
+    private fun MapLibreUiState.View.reduce(
+        event: UiEvent
+    ): Pair<MapLibreUiState, MapLibreUiSideEffect> = when (event) {
+        is MapLibreMapsUiEvent.menuClick -> copy(menuExpanded = !menuExpanded) to MapLibreUiSideEffect.None
+        is MapLibreMapsUiEvent.zoomOutClick ->
+            copy(zoom = if (zoom == 1.0) 1.0 else zoom - 1) to MapLibreUiSideEffect.None
+
+        is MapLibreMapsUiEvent.zoomInClick -> copy(zoom = zoom + 1) to MapLibreUiSideEffect.None
+        else -> this to MapLibreUiSideEffect.None
     }
+
+
 }
