@@ -29,7 +29,9 @@ android {
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(project(":feature-ghcrange-mobile-api"))
+    implementation(project(":feature-ghcrange"))
     implementation(project(":core-arch"))
+    implementation(project(":core-designsystem"))
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)

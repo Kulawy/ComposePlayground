@@ -6,7 +6,7 @@ import com.jakger.core_arch.navi.AppNavigator
 import com.jakger.core_arch.navi.NavigationEntries
 import com.jakger.feature_googlemaps_api.GhcRangeNavFlow
 import com.jakger.ghcrange_mobile.ui.main.GhcRangeScreen
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class GhcRangeEntries @Inject constructor() : NavigationEntries {
     override fun install(

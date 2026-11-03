@@ -6,7 +6,7 @@ import com.jakger.core_arch.navi.AppNavigator
 import com.jakger.core_arch.navi.NavigationEntries
 import com.jakger.feature_maplibremaps.ui.main.MapLibreScreen
 import com.jakger.feature_maplibremaps_api.MapLibreMapsNavigationFlow
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class MapLibreEntries @Inject constructor() : NavigationEntries {
     override fun install(

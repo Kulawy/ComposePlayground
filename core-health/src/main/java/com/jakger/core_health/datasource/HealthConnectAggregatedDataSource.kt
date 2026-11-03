@@ -1,0 +1,87 @@
+package com.jakger.core_health.datasource
+
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
+import androidx.health.connect.client.records.BloodPressureRecord
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.request.AggregateRequest
+import androidx.health.connect.client.time.TimeRangeFilter
+import com.jakger.core_arch.di.IoDispatcher
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
+import java.time.Instant
+
+/***
+ * Health Connect Aggregated Data Source
+ * as Google Health Connect not updates data in real time,
+ * we only use suspend function as 'one shot' call for data
+ */
+@Singleton
+class HealthConnectAggregatedDataSource @Inject constructor(
+    private val healthConnectClient: HealthConnectClient,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) {
+
+    suspend fun getGrantedPermissions() =
+        healthConnectClient.permissionController.getGrantedPermissions()
+
+    // ACTIVITY & EXERCISED
+    suspend fun getAggregatedSteps(startTime: Instant, endTime: Instant): Long? {
+        val response = healthConnectClient.aggregate(
+            AggregateRequest(
+                metrics = setOf(StepsRecord.COUNT_TOTAL),
+                timeRangeFilter = TimeRangeFilter.between(
+                    startTime = startTime,
+                    endTime = endTime
+                )
+            )
+        )
+
+        return response[StepsRecord.COUNT_TOTAL]
+    }
+
+    suspend fun getDistanceRecord(startTime: Instant, endTime: Instant) =
+        healthConnectClient.aggregate(
+            AggregateRequest(
+                metrics = setOf(DistanceRecord.DISTANCE_TOTAL),
+                timeRangeFilter = TimeRangeFilter.between(
+                    startTime = startTime,
+                    endTime = endTime
+                )
+            )
+        )
+
+    suspend fun getActiveCaloriesBurned(startTime: Instant, endTime: Instant) =
+        healthConnectClient.aggregate(
+            AggregateRequest(
+                metrics = setOf(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
+                timeRangeFilter = TimeRangeFilter.between(startTime, Instant.now()),
+            )
+        )[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories ?: 0.0
+
+    // VITALS
+
+    suspend fun getBloodPressure(startTime: Instant, endTime: Instant) =
+        healthConnectClient.aggregate(
+            AggregateRequest(
+                metrics = setOf(BloodPressureRecord.SYSTOLIC_AVG),
+                timeRangeFilter = TimeRangeFilter.between(startTime, Instant.now()),
+            )
+        )
+
+    suspend fun getHearRate(startTime: Instant, endTime: Instant) =
+        healthConnectClient.aggregate(
+            AggregateRequest(
+                metrics = setOf(
+                    HeartRateRecord.BPM_MIN,
+                    HeartRateRecord.BPM_AVG,
+                    HeartRateRecord.BPM_MAX,
+                    HeartRateRecord.MEASUREMENTS_COUNT,
+                ),
+                timeRangeFilter = TimeRangeFilter.between(startTime, Instant.now()),
+            )
+        )
+}

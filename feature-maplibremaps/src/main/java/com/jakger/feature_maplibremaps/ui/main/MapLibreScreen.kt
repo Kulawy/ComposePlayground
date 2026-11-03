@@ -7,22 +7,17 @@ import androidx.compose.foundation.layout.visible
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jakger.feature_maplibremaps.R
 import com.jakger.feature_maplibremaps.ui.utils.Dimens
-import com.jakger.core_designsystem.R as DS
 import org.maplibre.compose.camera.CameraUpdate
 import org.maplibre.compose.location.LocationTrackingEffect
 import org.maplibre.compose.location.rememberDefaultHeadingProvider
@@ -35,6 +30,7 @@ import org.maplibre.compose.material3.LocationIndicatorLayer
 import org.maplibre.compose.overlay.MapOverlay
 import org.maplibre.compose.overlay.include
 import org.maplibre.compose.style.BaseStyle
+import com.jakger.core_designsystem.R as DS
 
 @Composable
 fun MapLibreScreen(
@@ -133,22 +129,6 @@ private fun MapLibreScreenContent(
                         modifier = modifier,
                     )
                 }
-            }
-
-            IconButton(
-                modifier = Modifier
-                    .padding(bottom = 128.dp)
-                    .align(Alignment.BottomStart)
-                    .size(48.dp),
-                onClick = { },
-            ) {
-                Icon(
-                    imageVector = ImageVector
-                        .vectorResource(R.drawable.ic_baseline_back_hand_48),
-                    contentDescription = "HAND",
-                    modifier = modifier,
-                    tint = Color.DarkGray
-                )
             }
         }
     )

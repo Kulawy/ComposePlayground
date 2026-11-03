@@ -2,6 +2,7 @@ package com.jakger.ghcrange_mobile.ui.main
 
 import androidx.compose.runtime.Stable
 import com.jakger.core_arch.mvi.UiState
+import com.jakger.ghcrange_mobile.model.HealthRecord
 
 sealed class GhcRangeUiState : UiState {
 
@@ -14,8 +15,14 @@ sealed class GhcRangeUiState : UiState {
     ) : GhcRangeUiState()
 
     @Stable
-    data class Loading(
-        val message: String
-    ) : GhcRangeUiState()
+    data object Loading : GhcRangeUiState()
 
+    @Stable
+    data class View(
+        val activityRecords: List<HealthRecord>,
+        val vitalsRecords: List<HealthRecord>
+    ) : GhcRangeUiState()
 }
+
+// Field: ActiveCaloriesBurnedRecord
+// Field: DistanceRecord

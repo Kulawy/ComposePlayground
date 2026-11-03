@@ -78,4 +78,5 @@ dependencies {
     implementation(project(":feature-dashboard-api"))
     implementation(project(":core-designsystem"))
     implementation(project(":core-arch"))
+    implementation(project(":core-health"))
 }

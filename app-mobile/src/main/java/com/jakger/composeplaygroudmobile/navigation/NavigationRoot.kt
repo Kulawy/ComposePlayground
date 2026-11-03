@@ -58,7 +58,7 @@ fun NavigationRoot(
                         paddingValues.calculateTopPadding()
                     )
                     .fillMaxWidth()
-                    .background(Color(255f, 255f, 255f, 0.1f))
+                    .background(Color(255f, 255f, 255f, 0.4f))
             )
         }
     }

@@ -8,7 +8,7 @@ import com.jakger.core_arch.navi.NavigationEntries
 import com.jakger.feature_dashboard.buttons.ButtonsScreen
 import com.jakger.feature_dashboard.home.HomeScreen
 import com.jakger.feature_dashboard_api.DashboardNavigationFlow
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 //fun EntryProviderScope<NavKey>.dashboardEntryBuilderEntryBuilder() {
 //    entry<DashboardNavigationFlow.Home> {
