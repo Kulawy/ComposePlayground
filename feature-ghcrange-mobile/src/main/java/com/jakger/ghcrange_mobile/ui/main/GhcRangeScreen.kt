@@ -31,6 +31,7 @@ import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jakger.core_common.logging.ComposeLog
 import com.jakger.core_designsystem.ui.components.InfinityTrail
 import com.jakger.feature_ghcrange_mobile.R
 import com.jakger.core_designsystem.R.dimen as dsDim
@@ -65,6 +66,7 @@ fun GhcRangeScreen(
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = requestPermissionContract
     ) { grantedPermissions ->
+        ComposeLog.d { "Health Connect permission result received" }
 //        onPermissionsResult(grantedPermissions)
         if (grantedPermissions.containsAll(healthPermissions)) {
             viewModel.dispatchUiIntent(GhcRangeUiEvent.HealthPermissionsGranted)

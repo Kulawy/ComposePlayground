@@ -3,6 +3,7 @@ package com.jakger.ghcrange_mobile.ui.main
 import androidx.lifecycle.viewModelScope
 import com.jakger.core_arch.mvi.MviViewModel
 import com.jakger.core_common.domain.fold
+import com.jakger.core_common.logging.AppLog
 import com.jakger.feature_ghcrange.model.HealthConnectAccess
 import com.jakger.feature_ghcrange.usecase.CheckHealthConnectAvailabilityUseCase
 import com.jakger.feature_ghcrange.usecase.GetHeartRateYesterdayUseCase
@@ -61,6 +62,7 @@ class GhcRangeViewModel @Inject constructor(
     private fun consumeUiIntents() {
         viewModelScope.launch {
             intents.consumeEach { intent ->
+                AppLog.d { "Processing intent: ${intent.javaClass.simpleName}" }
                 val (state, effect) = reducer(event = intent, uiState.value)
                 _uiState.value = state
                 _uiSideEffect.emit(effect)
@@ -78,6 +80,7 @@ class GhcRangeViewModel @Inject constructor(
     private fun consumeUiSideEffects() {
         viewModelScope.launch {
             _uiSideEffect.collect { effect ->
+                AppLog.d { "Handling effect: ${effect.javaClass.simpleName}" }
                 when (effect) {
                     is GhcRangeUiSideEffect.Navigation -> {
                         _navigationEffects.send(effect)
@@ -98,6 +101,7 @@ class GhcRangeViewModel @Inject constructor(
 
     private suspend fun checkHealthConnectAvailability() {
         checkHealthConnectAvailabilityUseCase().run {
+            AppLog.d { "HealthConnectAccess value: $this" }
             when (this){
                 is HealthConnectAccess.Granted -> {
                     fetchHealthData()

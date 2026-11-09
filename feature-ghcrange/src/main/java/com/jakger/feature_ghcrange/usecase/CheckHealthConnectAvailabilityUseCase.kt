@@ -1,6 +1,7 @@
 package com.jakger.feature_ghcrange.usecase
 
 import com.jakger.core_common.domain.DomainResult
+import com.jakger.core_common.logging.AppLog
 import com.jakger.feature_ghcrange.model.HealthAvailability
 import com.jakger.feature_ghcrange.model.HealthConnectAccess
 import com.jakger.feature_ghcrange.repository.HealthRepository
@@ -10,6 +11,7 @@ class CheckHealthConnectAvailabilityUseCase @Inject constructor(
     private val healthRepository: HealthRepository
 ) {
     suspend operator fun invoke(): HealthConnectAccess {
+        AppLog.d { "Checking Health Connect access" }
 
         val permissions = healthRepository.checkPermissions()
         val availability = healthRepository.availability()

@@ -18,4 +18,5 @@ dependencies {
     implementation(libs.jakarta.inject)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.junit)
 }
