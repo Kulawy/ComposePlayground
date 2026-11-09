@@ -15,6 +15,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -66,15 +67,29 @@ fun GhcRangeScreen(
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = requestPermissionContract
     ) { grantedPermissions ->
-        ComposeLog.d { "Health Connect permission result received" }
+        ComposeLog.d { "Health Connect permission Launcher result received" }
 //        onPermissionsResult(grantedPermissions)
         if (grantedPermissions.containsAll(healthPermissions)) {
-            viewModel.dispatchUiIntent(GhcRangeUiEvent.HealthPermissionsGranted)
+            ComposeLog.d { "Health Connect permission Launcher GRANTED" }
+            viewModel.dispatchUiEvent(GhcRangeUiEvent.HealthPermissionsGranted)
         } else {
-            viewModel.dispatchUiIntent(GhcRangeUiEvent.HealthPermissionsDenied)
+            ComposeLog.d { "Health Connect permission Launcher DENIED" }
+            viewModel.dispatchUiEvent(GhcRangeUiEvent.HealthPermissionsDenied)
         }
     }
 
+    LaunchedEffect(Unit) {
+        ComposeLog.d { "LaunchEffect Run" }
+        viewModel.uiEffects
+//            .flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .collect { effect ->
+                ComposeLog.d { "Health Connect Effect received: $effect" }
+                when (effect) {
+                    is GhcRangeUiSideEffect.UiEffect.RequestPermissions ->
+                        permissionLauncher.launch(healthPermissions)
+                }
+            }
+    }
 //    display permissions dialog
 //    permissionLauncher.launch(healthPermissions)
 
@@ -85,13 +100,19 @@ fun GhcRangeScreen(
             .fillMaxSize(),
     ) {
         when (val screenState = state.value) {
-            is GhcRangeUiState.Initial, GhcRangeUiState.Loading -> InfinityTrail(
+            is GhcRangeUiState.Initial -> {
+                InfinityTrail(
+                    modifier = modifier.align(Alignment.Center),
+                )
+            }
+
+            is GhcRangeUiState.Loading -> InfinityTrail(
                 modifier = modifier.align(Alignment.Center),
             )
 
             is GhcRangeUiState.Display -> DisplayForm(
                 state = screenState,
-                onEvent = { event -> viewModel.dispatchUiIntent(event) }
+                onEvent = { event -> viewModel.dispatchUiEvent(event) }
             )
 
             is GhcRangeUiState.Error -> {
@@ -99,7 +120,7 @@ fun GhcRangeScreen(
                     modifier = modifier
                         .align(Alignment.TopCenter),
                     state = screenState,
-                    onEvent = { event -> viewModel.dispatchUiIntent(event) }
+                    onEvent = { event -> viewModel.dispatchUiEvent(event) }
                 )
             }
         }
@@ -115,8 +136,8 @@ private fun DisplayForm(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(dimensionResource(dsDim.margin_24)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(dsDim.margin_16))
     ) {
 //        val records = state.activityRecords
         item {

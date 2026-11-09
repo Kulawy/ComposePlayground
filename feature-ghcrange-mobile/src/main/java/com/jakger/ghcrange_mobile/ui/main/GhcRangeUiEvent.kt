@@ -9,6 +9,7 @@ sealed interface GhcRangeUiEvent : UiEvent {
     data object HealthDataUnsupported : GhcRangeUiEvent
     data object HealthPermissionsDenied : GhcRangeUiEvent
     data object HealthPermissionsGranted : GhcRangeUiEvent
+    data object RequestPermission : GhcRangeUiEvent
 
     data class HeartRateFetched(
         val heartRate: HeartRateAggregatedStats

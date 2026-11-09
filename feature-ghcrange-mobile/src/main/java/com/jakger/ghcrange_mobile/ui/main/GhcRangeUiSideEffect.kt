@@ -10,4 +10,8 @@ sealed interface GhcRangeUiSideEffect : UiSideEffect {
     sealed interface Navigation : GhcRangeUiSideEffect {
         data object Back : Navigation
     }
+
+    sealed interface UiEffect : GhcRangeUiSideEffect {
+        data object RequestPermissions : UiEffect
+    }
 }

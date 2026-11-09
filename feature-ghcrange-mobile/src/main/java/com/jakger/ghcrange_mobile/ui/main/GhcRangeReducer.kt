@@ -55,33 +55,19 @@ class GhcRangeReducer @Inject constructor() :
             is GhcRangeUiEvent.HeartRateFetched ->
                 GhcRangeUiState.Display(
                     event.heartRate
-                ) to GhcRangeUiSideEffect.FetchHealthData
+                ) to GhcRangeUiSideEffect.None
 
             is GhcRangeUiEvent.HealthDataUnsupported ->
                 GhcRangeUiState.Error.HealthDataNotAvailable to GhcRangeUiSideEffect.None
 
             is GhcRangeUiEvent.HealthPermissionsGranted ->
-                this to GhcRangeUiSideEffect.None
+                this to GhcRangeUiSideEffect.FetchHealthData
 
             is GhcRangeUiEvent.HealthPermissionsDenied ->
                 GhcRangeUiState.Error.PermissionsNotGranted to GhcRangeUiSideEffect.None
-//            is UiEvent.InitialDataLoaded -> {
-//                event.toUiState(
-//                    customStartDate = operationPeriodConstants.bankStatementDefaultCustomStartDate,
-//                    customEndDate = operationPeriodConstants.today
-//                ) to UiSideEffect.None
-//            }
-//
-//            is UiEvent.GetInitialDataError -> {
-//                analytics.screenDisplayed(
-//                    ScreenFirebase.BANK_STATEMENT_ERROR_GENERAL,
-//                    UiState.Error.InitializeError::class.java
-//                )
-//                UiState.Error.InitializeError(
-//                    isFileComplaintVisible = coreModuleConfig
-//                        .bankLocale.countryCode == Locale.PL.name
-//                ) to UiSideEffect.None
-//            }
+
+            is GhcRangeUiEvent.RequestPermission ->
+                this to GhcRangeUiSideEffect.UiEffect.RequestPermissions
 
             else -> {
                 illegalEventForState(this, event)

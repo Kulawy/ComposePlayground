@@ -43,7 +43,7 @@ fun MapLibreScreen(
     when (val screenState = state.value) {
         is MapLibreUiState.View -> MapLibreScreenContent(
             state = screenState,
-            onEvent = { event -> viewModel.dispatchUiIntent(event) }
+            onEvent = { event -> viewModel.dispatchUiEvent(event) }
         )
 
         else -> {}

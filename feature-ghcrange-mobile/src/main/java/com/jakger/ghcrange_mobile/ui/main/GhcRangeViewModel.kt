@@ -42,11 +42,15 @@ class GhcRangeViewModel @Inject constructor(
 
     private val _navigationEffects =
         Channel<GhcRangeUiSideEffect.Navigation>(Channel.BUFFERED)
-
     val navigationEffects: Flow<GhcRangeUiSideEffect.Navigation> =
         _navigationEffects.receiveAsFlow()
 
-    override fun dispatchUiIntent(event: GhcRangeUiEvent) {
+    private val _uiEffect =
+        Channel<GhcRangeUiSideEffect.UiEffect>(Channel.BUFFERED)
+    val uiEffects: Flow<GhcRangeUiSideEffect.UiEffect> =
+        _uiEffect.receiveAsFlow()
+
+    override fun dispatchUiEvent(event: GhcRangeUiEvent) {
         viewModelScope.launch {
             intents.send(event)
         }
@@ -56,23 +60,16 @@ class GhcRangeViewModel @Inject constructor(
         consumeUiIntents()
         consumeUiSideEffects()
 
-        dispatchUiIntent(GhcRangeUiEvent.CheckHealthDataAvailability)
+        dispatchUiEvent(GhcRangeUiEvent.CheckHealthDataAvailability)
     }
 
     private fun consumeUiIntents() {
         viewModelScope.launch {
             intents.consumeEach { intent ->
-                AppLog.d { "Processing intent: ${intent.javaClass.simpleName}" }
+                AppLog.d { "Processing intent: $$intent" }
                 val (state, effect) = reducer(event = intent, uiState.value)
                 _uiState.value = state
                 _uiSideEffect.emit(effect)
-//                if ( intent is GhcRangeUiIntent){
-//                    // popBackStack()
-//
-//                    _uiSideEffect.emit(GhcRangeUiSideEffect.NavigateBack)
-//                } else {
-//
-//                }
             }
         }
     }
@@ -84,6 +81,9 @@ class GhcRangeViewModel @Inject constructor(
                 when (effect) {
                     is GhcRangeUiSideEffect.Navigation -> {
                         _navigationEffects.send(effect)
+                    }
+                    is GhcRangeUiSideEffect.UiEffect -> {
+                        _uiEffect.send(effect)
                     }
 
                     is GhcRangeUiSideEffect.FetchHealthData ->
@@ -102,18 +102,26 @@ class GhcRangeViewModel @Inject constructor(
     private suspend fun checkHealthConnectAvailability() {
         checkHealthConnectAvailabilityUseCase().run {
             AppLog.d { "HealthConnectAccess value: $this" }
-            when (this){
+            when (this) {
                 is HealthConnectAccess.Granted -> {
                     fetchHealthData()
                 }
+
                 is HealthConnectAccess.NeedsPermission -> {
-                    dispatchUiIntent(GhcRangeUiEvent.HealthPermissionsDenied)
+                    if (_uiState.value is GhcRangeUiState.Initial){
+                        dispatchUiEvent(GhcRangeUiEvent.RequestPermission)
+                    }
+                    else {
+                        dispatchUiEvent(GhcRangeUiEvent.HealthPermissionsDenied)
+                    }
                 }
+
                 is HealthConnectAccess.NeedsInstall -> {
-                    dispatchUiIntent(GhcRangeUiEvent.HealthDataUnsupported)
+                    dispatchUiEvent(GhcRangeUiEvent.HealthDataUnsupported)
                 }
+
                 is HealthConnectAccess.Unsupported -> {
-                    dispatchUiIntent(GhcRangeUiEvent.HealthDataUnsupported)
+                    dispatchUiEvent(GhcRangeUiEvent.HealthDataUnsupported)
                 }
             }
         }
@@ -122,16 +130,12 @@ class GhcRangeViewModel @Inject constructor(
     private suspend fun fetchHealthData() {
         getHeartRateYesterdayUseCase().fold(
             onSuccess = {
-                dispatchUiIntent(
-                    GhcRangeUiEvent.HeartRateFetched(
-                        it
-                    )
+                dispatchUiEvent(
+                    GhcRangeUiEvent.HeartRateFetched(it)
                 )
             },
             onFailure = {
-                dispatchUiIntent(
-                    GhcRangeUiEvent.HealthDataUnsupported
-                )
+                dispatchUiEvent(GhcRangeUiEvent.HealthDataUnsupported)
             }
         )
     }

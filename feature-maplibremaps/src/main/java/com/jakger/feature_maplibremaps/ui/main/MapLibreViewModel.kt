@@ -29,7 +29,7 @@ class MapLibreViewModel @Inject constructor(
     override val uiState: StateFlow<MapLibreUiState> = _uiState
     override val uiSideEffect: SharedFlow<MapLibreUiSideEffect> = _uiSideEffect
 
-    override fun dispatchUiIntent(event: MapLibreMapsUiEvent) {
+    override fun dispatchUiEvent(event: MapLibreMapsUiEvent) {
         viewModelScope.launch {
             events.send(event)
         }

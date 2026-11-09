@@ -21,5 +21,5 @@ abstract class MviViewModel<S: UiState, I: UiEvent, E: UiSideEffect>(
     abstract val uiState: StateFlow<S>
     abstract val uiSideEffect: SharedFlow<E>
 
-    abstract fun dispatchUiIntent(event: I)
+    abstract fun dispatchUiEvent(event: I)
 }
