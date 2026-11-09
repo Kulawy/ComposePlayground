@@ -29,6 +29,7 @@ osmVersion = "6.1.20"
 mapLibreVersion = "0.20.0"
 healthConnectVersion = "1.2.0-alpha06"
 kotlinCoroutines = "1.11.0"
+material3WindowSizeClass = "1.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -78,6 +79,7 @@ healt-connect-client = { group = "androidx.health.connect", name = "connect-clie
 
 # kotlin
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
+androidx-compose-material3-window-size-class1 = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "material3WindowSizeClass" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

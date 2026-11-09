@@ -1,5 +1,6 @@
 package com.jakger.core_health.datasource
 
+import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
@@ -18,9 +19,19 @@ import java.time.Instant
  */
 @Singleton
 class HealthConnectDataSource @Inject constructor(
-    private val healthConnectClient: HealthConnectClient,
+    context: Context,
+//    private val healthConnectClient: HealthConnectClient,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
+
+    private val appContext = context.applicationContext
+    private val healthConnectClient: HealthConnectClient by lazy {
+        HealthConnectClient.getOrCreate(
+            appContext
+        )
+    }
+
+    fun sdkStatus(): Int = HealthConnectClient.getSdkStatus(appContext)
 
     suspend fun getGrantedPermissions() =
         healthConnectClient.permissionController.getGrantedPermissions()

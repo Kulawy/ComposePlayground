@@ -13,6 +13,12 @@
         tools:ignore="HealthConnectPolicy" />
     <uses-permission android:name="android.permission.health.WRITE_STEPS"
         tools:ignore="HealthConnectPolicy" />
+    <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE"
+        tools:ignore="HealthConnectPolicy" />
+    <uses-permission android:name="android.permission.health.READ_DISTANCE"
+        tools:ignore="HealthConnectPolicy" />
+    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED"
+        tools:ignore="HealthConnectPolicy" />
 
     <application
         android:name="ComposePlaygroundApp"

@@ -36,17 +36,19 @@ fun NavigationRoot(
         }
     }
 
-    ComposePlaygroundTheme {
+    ComposePlaygroundTheme(
+        dynamicColor = false
+    ) {
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
         ) { paddingValues ->
             NavDisplay(
                 backStack = backStack,
-                onBack = { backStack.removeLastOrNull() },
+                onBack = navigator::goBack,
                 entryDecorators = listOf(
-                    rememberViewModelStoreNavEntryDecorator(),
                     rememberSaveableStateHolderNavEntryDecorator(), // replaced rememberSavedStateNavEntryDecorator
+                    rememberViewModelStoreNavEntryDecorator(),
                     rememberResultEventBusNavEntryDecorator(),
                 ),
                 entryProvider = provider

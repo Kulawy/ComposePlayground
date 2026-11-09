@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="google_maps_screen_title">Google Maps</string>
+    <string name="google_health_connect_title">Google Health Connect</string>
+    <string name="error_card_title">Error</string>
+    <string name="ghc_range_error_permissions_not_granted">Permissions Not Granted</string>
+    <string name="ghc_range_error_service_unavailable">Service Unavailable</string>">
 </resources>

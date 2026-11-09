@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +24,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.navigation3.runtime.NavKey
@@ -34,6 +37,7 @@ import com.jakger.feature_dashboard.utils.checkLocationPermissions
 import com.jakger.feature_dashboard_api.DashboardNavigationFlow
 import com.jakger.feature_googlemaps_api.GhcRangeNavFlow
 import com.jakger.feature_maplibremaps_api.MapLibreMapsNavigationFlow
+import com.jakger.core_designsystem.R.dimen as dsDim
 
 @Composable
 fun HomeScreen(
@@ -60,7 +64,8 @@ fun HomeScreen(
             Toast.makeText(context, "Przyznano dokładną lokalizację", Toast.LENGTH_SHORT).show()
         } else if (coarseGranted) {
             hasLocationPermission = true
-            Toast.makeText(context, "Przyznano tylko przybliżoną lokalizację", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Przyznano tylko przybliżoną lokalizację", Toast.LENGTH_SHORT)
+                .show()
         } else {
             hasLocationPermission = false
             Toast.makeText(context, "Odrzucono dostęp do lokalizacji", Toast.LENGTH_SHORT).show()
@@ -77,24 +82,29 @@ fun HomeScreen(
                     end = Offset(1000f, 1000f)
                 )
             )
-            .statusBarsPadding()
-        ,
+            .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val items = listOf<kotlin.Pair<kotlin.String, NavKey>>(
+        val items = listOf(
             stringResource(R.string.buttons_title) to DashboardNavigationFlow.Buttons,
             stringResource(R.string.google_health_connect_title) to GhcRangeNavFlow.Main,
-            stringResource(R.string.openstreetmaps_title) to MapLibreMapsNavigationFlow.Main
+            stringResource(R.string.maplibre_title) to MapLibreMapsNavigationFlow.Main
         )
         Text(
+            modifier = Modifier.padding(
+                top = dimensionResource(dsDim.margin_16),
+                bottom = dimensionResource(dsDim.margin_4)
+            ),
             text = stringResource(R.string.dashboard_title),
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.ExtraBold
+            )
         )
         items.forEach { (title, route) ->
             TextButton(
                 onClick = {
-                    if (route is MapLibreMapsNavigationFlow){
-                        if (hasLocationPermission){
+                    if (route is MapLibreMapsNavigationFlow) {
+                        if (hasLocationPermission) {
                             navigator.goTo(route)
                         } else {
                             locationPermissionLauncher.launch(locationPermissions)
@@ -112,7 +122,7 @@ fun HomeScreen(
             ) {
                 Text(text = title)
             }
-            if (route is MapLibreMapsNavigationFlow && !hasLocationPermission){
+            if (route is MapLibreMapsNavigationFlow && !hasLocationPermission) {
                 Text(
                     text = stringResource(R.string.localization_permissions_required),
                     style = MaterialTheme.typography.labelSmall,

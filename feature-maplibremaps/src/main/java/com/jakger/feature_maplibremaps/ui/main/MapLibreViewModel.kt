@@ -2,7 +2,6 @@ package com.jakger.feature_maplibremaps.ui.main
 
 import androidx.lifecycle.viewModelScope
 import com.jakger.core_arch.mvi.MviViewModel
-import com.jakger.core_arch.mvi.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -16,8 +15,8 @@ import jakarta.inject.Inject
 
 @HiltViewModel
 class MapLibreViewModel @Inject constructor(
-    override val reducer: MapLibreMapsReducer
-) : MviViewModel(reducer) {
+    reducer: MapLibreMapsReducer
+) : MviViewModel<MapLibreUiState, MapLibreMapsUiEvent, MapLibreUiSideEffect>(reducer) {
 
     private val _uiState: MutableStateFlow<MapLibreUiState> =
         MutableStateFlow(MapLibreUiState.View())
@@ -30,11 +29,9 @@ class MapLibreViewModel @Inject constructor(
     override val uiState: StateFlow<MapLibreUiState> = _uiState
     override val uiSideEffect: SharedFlow<MapLibreUiSideEffect> = _uiSideEffect
 
-    override fun dispatchUiEvent(event: UiEvent) {
-        if (event is MapLibreMapsUiEvent) {
-            viewModelScope.launch {
-                events.send(event)
-            }
+    override fun dispatchUiIntent(event: MapLibreMapsUiEvent) {
+        viewModelScope.launch {
+            events.send(event)
         }
     }
 

@@ -3,7 +3,7 @@
     <string name="dashboard_title">Choose Your Path</string>
     <string name="buttons_title">Buttons</string>
     <string name="google_health_connect_title">Google Health Connect</string>">
-    <string name="openstreetmaps_title">MapLibre Compose Maps</string>">
+    <string name="maplibre_title">MapLibre Compose Maps</string>">
     <string name="localization_permissions_required">Localization permissions required</string>">
     <string name="health_permissions_required">Health permissions required</string>">
 </resources>

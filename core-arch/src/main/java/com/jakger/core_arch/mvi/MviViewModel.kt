@@ -15,11 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
  *  if UiEvent starts async action (communication with backend etc.) it should return UiSideEffect
  */
 
-abstract class MviViewModel(
-    open val reducer: MviReducer<UiState, UiEvent, UiSideEffect>,
+abstract class MviViewModel<S: UiState, I: UiEvent, E: UiSideEffect>(
+    open val reducer: MviReducer<S, I, E>,
 ): ViewModel() {
-    abstract val uiState: StateFlow<UiState>
-    abstract val uiSideEffect: SharedFlow<UiSideEffect>
+    abstract val uiState: StateFlow<S>
+    abstract val uiSideEffect: SharedFlow<E>
 
-    abstract fun dispatchUiEvent(event: UiEvent)
+    abstract fun dispatchUiIntent(event: I)
 }

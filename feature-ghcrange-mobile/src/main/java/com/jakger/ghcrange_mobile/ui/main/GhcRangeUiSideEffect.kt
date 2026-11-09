@@ -2,6 +2,12 @@ package com.jakger.ghcrange_mobile.ui.main
 
 import com.jakger.core_arch.mvi.UiSideEffect
 
-sealed class GhcRangeUiSideEffect : UiSideEffect {
-    data object None : GhcRangeUiSideEffect()
+sealed interface GhcRangeUiSideEffect : UiSideEffect {
+    data object FetchHealthData : GhcRangeUiSideEffect
+    data object CheckHealthDataAvailability : GhcRangeUiSideEffect
+    data object None : GhcRangeUiSideEffect
+
+    sealed interface Navigation : GhcRangeUiSideEffect {
+        data object Back : Navigation
+    }
 }

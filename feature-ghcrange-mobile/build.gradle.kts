@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.jakger.featuregooglemaps"
+    namespace = "com.jakger.feature_ghcrange_mobile"
     compileSdk {
         version = release(37)
     }
@@ -32,8 +32,10 @@ dependencies {
     implementation(project(":feature-ghcrange"))
     implementation(project(":core-arch"))
     implementation(project(":core-designsystem"))
+    implementation(project(":core-common"))
 
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.compose.material3.window.size.class1)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
 

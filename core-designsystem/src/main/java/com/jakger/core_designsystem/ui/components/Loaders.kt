@@ -32,8 +32,8 @@ import kotlin.math.sin
 fun InfinityTrail(
     modifier: Modifier = Modifier,
     color: Color = Cyan600,
-    size: Dp = 64.dp,
-    durationMillis: Int = 5000,
+    size: Dp = 128.dp,
+    durationMillis: Int = 1500,
 ) {
     val progress by rememberLoopProgress(durationMillis)
     val track = remember { Path() }

@@ -1,5 +1,6 @@
 package com.jakger.core_health.datasource
 
+import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BloodPressureRecord
@@ -21,15 +22,19 @@ import java.time.Instant
  */
 @Singleton
 class HealthConnectAggregatedDataSource @Inject constructor(
-    private val healthConnectClient: HealthConnectClient,
+//    private val healthConnectClient: HealthConnectClient,
+    context: Context,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
-
-    suspend fun getGrantedPermissions() =
-        healthConnectClient.permissionController.getGrantedPermissions()
+    private val appContext = context.applicationContext
+    private val healthConnectClient: HealthConnectClient by lazy {
+        HealthConnectClient.getOrCreate(
+            appContext
+        )
+    }
 
     // ACTIVITY & EXERCISED
-    suspend fun getAggregatedSteps(startTime: Instant, endTime: Instant): Long? {
+    suspend fun getStepsForPeriod(startTime: Instant, endTime: Instant): Long? {
         val response = healthConnectClient.aggregate(
             AggregateRequest(
                 metrics = setOf(StepsRecord.COUNT_TOTAL),
@@ -81,7 +86,7 @@ class HealthConnectAggregatedDataSource @Inject constructor(
                     HeartRateRecord.BPM_MAX,
                     HeartRateRecord.MEASUREMENTS_COUNT,
                 ),
-                timeRangeFilter = TimeRangeFilter.between(startTime, Instant.now()),
+                timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
             )
         )
 }
