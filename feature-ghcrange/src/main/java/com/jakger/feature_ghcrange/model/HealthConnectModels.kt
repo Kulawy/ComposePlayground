@@ -9,6 +9,7 @@ sealed interface HealthConnectAccess {
     data object NeedsPermission : HealthConnectAccess
     data object NeedsInstall : HealthConnectAccess
     data object Unsupported : HealthConnectAccess
+    data object Unavailable : HealthConnectAccess
 }
 
 sealed interface HealthConnectError: DomainError {

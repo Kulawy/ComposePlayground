@@ -12,6 +12,8 @@ sealed interface GhcRangeUiSideEffect : UiSideEffect {
     }
 
     sealed interface UiEffect : GhcRangeUiSideEffect {
+        data object ExplainPermissions : UiEffect
         data object RequestPermissions : UiEffect
+        data object OpenPermissionSettings : UiEffect
     }
 }

@@ -3,5 +3,21 @@
     <string name="google_health_connect_title">Google Health Connect</string>
     <string name="error_card_title">Error</string>
     <string name="ghc_range_error_permissions_not_granted">Permissions Not Granted</string>
-    <string name="ghc_range_error_service_unavailable">Service Unavailable</string>">
+    <string name="ghc_range_error_service_unavailable">Service Unavailable</string>
+    <string name="health_permissions_title">Health data permissions</string>
+    <string name="health_permissions_message">There is need to health data usage permissions to app work.</string>
+    <string name="health_permissions_data_usage">This feature requests read access to steps, heart rate, blood pressure, distance, and active calories from Health Connect. Heart rate data is used to display your summary for yesterday.</string>
+    <string name="health_permissions_choice">You choose which permissions to allow in Health Connect. You can change or revoke access at any time in Health Connect settings. Without access, this feature cannot show your health summary.</string>
+    <string name="health_permissions_continue">Continue</string>
+    <string name="health_permissions_not_now">Not now</string>
+    <string name="health_permissions_back">Back to permissions</string>
+    <string name="health_permissions_retry">Try again</string>
+    <string name="health_permissions_settings">Manage permissions</string>
+    <string name="health_permissions_leave">Go back</string>
+    <string name="record_heart_rate_section_description">"Heart Rate"</string>
+    <string name="period_description_yesterday">"yesterday"</string>
+    <string name="record_description_min_heart_rate">"Min:"</string>
+    <string name="record_description_max_heart_rate">"Max:"</string>
+    <string name="record_description_avg_heart_rate">"Average:"</string>
+    <string name="record_description_measurements_count">"Measurements count:"</string>
 </resources>

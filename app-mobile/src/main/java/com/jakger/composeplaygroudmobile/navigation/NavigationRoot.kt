@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -53,6 +54,10 @@ fun NavigationRoot(
                 ),
                 entryProvider = provider
             )
+            val topBarGradientColors = listOf(
+                Color.White,
+                Color.Transparent
+            )
             Box(
                 modifier = Modifier
                     .height(
@@ -60,7 +65,7 @@ fun NavigationRoot(
                         paddingValues.calculateTopPadding()
                     )
                     .fillMaxWidth()
-                    .background(Color(255f, 255f, 255f, 0.4f))
+                    .background(Brush.verticalGradient(topBarGradientColors))
             )
         }
     }

@@ -2,13 +2,16 @@ package com.jakger.ghcrange_mobile.ui.main
 
 import androidx.compose.runtime.Stable
 import com.jakger.core_arch.mvi.UiState
-import com.jakger.feature_ghcrange.model.HeartRateAggregatedStats
-import com.jakger.ghcrange_mobile.model.HealthRecord
+import com.jakger.feature_ghcrange.model.ui.HeartRateAggregatedStatsUi
 
 sealed interface GhcRangeUiState : UiState {
 
     @Stable
     data object Initial : GhcRangeUiState
+
+    data class AwaitingPermissionExplanation(val launchPending: Boolean = true) : GhcRangeUiState
+    data class AwaitingPermissionResult(val launchPending: Boolean = true) : GhcRangeUiState
+    data class AwaitingPermissionSettings(val launchPending: Boolean = true) : GhcRangeUiState
 
     @Stable
     sealed interface Error: GhcRangeUiState {
@@ -21,7 +24,7 @@ sealed interface GhcRangeUiState : UiState {
 
     @Stable
     data class Display(
-        val aggregatedHeartRate: HeartRateAggregatedStats,
+        val aggregatedHeartRate: HeartRateAggregatedStatsUi,
 //        val activityRecords: List<HealthRecord>,
 //        val vitalsRecords: List<HealthRecord>
     ) : GhcRangeUiState

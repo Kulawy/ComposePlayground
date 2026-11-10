@@ -16,6 +16,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import kotlin.coroutines.cancellation.CancellationException
 
 class CheckHealthConnectAvailabilityLoggingTest {
     private val entries = mutableListOf<Pair<String, String>>()
@@ -55,12 +56,57 @@ class CheckHealthConnectAvailabilityLoggingTest {
         assertTrue(entries.isEmpty())
     }
 
+    @Test
+    fun `unsupported provider is detected before querying permissions`() = runBlocking {
+        val repository = Repository(HealthAvailability.UNSUPPORTED, false)
+        assertEquals(HealthConnectAccess.Unsupported, CheckHealthConnectAvailabilityUseCase(repository)())
+        assertEquals(0, repository.permissionChecks)
+    }
+
+    @Test
+    fun `missing provider returns install requirement without creating a permission client`() = runBlocking {
+        val repository = Repository(HealthAvailability.NEEDS_INSTALL_OR_UPDATE, false)
+        assertEquals(HealthConnectAccess.NeedsInstall, CheckHealthConnectAvailabilityUseCase(repository)())
+        assertEquals(0, repository.permissionChecks)
+    }
+
+    @Test
+    fun `provider failure after availability check returns unavailable`() = runBlocking {
+        val repository = Repository(
+            HealthAvailability.AVAILABLE,
+            false,
+            permissionFailure = IllegalStateException("Service disconnected"),
+        )
+        assertEquals(HealthConnectAccess.Unavailable, CheckHealthConnectAvailabilityUseCase(repository)())
+        assertEquals(1, repository.permissionChecks)
+    }
+
+    @Test
+    fun `cancelled permission query propagates cancellation`() = runBlocking {
+        val cancellation = CancellationException("Screen closed")
+        val repository = Repository(HealthAvailability.AVAILABLE, false, permissionFailure = cancellation)
+        try {
+            CheckHealthConnectAvailabilityUseCase(repository)()
+            throw AssertionError("Cancellation should propagate")
+        } catch (exception: CancellationException) {
+            assertTrue(exception === cancellation)
+        }
+    }
+
     private class Repository(
         private val availability: HealthAvailability,
         private val permissions: Boolean,
+        private val permissionFailure: Exception? = null,
     ) : HealthRepository {
+        var permissionChecks = 0
+            private set
+
         override fun availability(): HealthAvailability = availability
-        override suspend fun checkPermissions(): Boolean = permissions
+        override suspend fun checkPermissions(): Boolean {
+            permissionChecks++
+            permissionFailure?.let { throw it }
+            return permissions
+        }
 
         override suspend fun getStepsForPeriod(startTime: Instant, endTime: Instant): DomainResult<Long> =
             error("Unexpected data read")
