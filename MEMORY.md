@@ -54,3 +54,22 @@ At the time of the recap, the logging implementation and integration changes wer
 - Reducer updates and launch acknowledgements are synchronous on the main thread, so progress is saved before opening an external activity. Buffered launches are checked against the current state before delivery.
 - UI launches are collected only while the screen lifecycle is `RESUMED`. Launch failures leave the waiting state with an error.
 - Verification for these fixes: debug APK and domain/mobile regression-test sources compiled successfully; static diff checks passed. Tests were not executed, and no ADB, emulator, or screenshots were used for these fixes, following the user's restrictions. The earlier runtime checks above apply to the implementation before this hardening.
+
+## Heart rate for the last twelve months — 2026-11-10
+
+- The user clarified that "last year" means the rolling last 12 months, ending now, rather than the previous calendar year.
+- Added `GetHeartRateLastYearUseCase`, using one zoned time snapshot and `minusMonths(12)`, then the existing aggregate repository method.
+- Historical reads check feature support and `READ_HEALTH_DATA_HISTORY` access before querying. The manifest declares the permission. Startup permission checks, the initial request, and its result callback include historical access when supported, even if the other permissions were already granted. Missing any required permission produces the full-screen permission error.
+- On 2026-11-11 the user explicitly requested flat screen state and supplied `GhcRangeUiState.Display(aggregatedYesterdayHeartRate, aggregatedLastYearHeartRate)`. Preserve these fields. `HeartRateHistoryUiState` and its separate loading/error/retry flow were removed; do not reintroduce per-card state for this screen.
+- The ViewModel fetches yesterday and the last twelve months under the one `Loading` state, then emits both results in `HeartRateFetched`. Either read failing leads to a full-screen error. Returning to the displayed screen rechecks permissions without automatically requesting them.
+- Both periods share `HeartRateCard` and `HeartRateStatistics`; the "Last 12 months" card is directly below yesterday in the scrollable list. All permission requests/settings actions remain confined to the initial permission flow, with no actions inside the summary cards.
+- Debug APK and domain/mobile regression sources compiled successfully. No tests were executed and no ADB, emulator, or screenshots were used. The user will run and test the app manually.
+
+## Resting heart rate cards — 2026-11-11
+
+- Added two `RestingHeartRateRecord` summaries below the existing heart-rate cards: yesterday in the phone's timezone and the rolling last 12 months. They reuse `HeartRateCard`, `HeartRateStatistics`, and the existing aggregate/UI models for average, minimum, maximum, and measurement count.
+- `HealthRepository` exposes a resting-heart-rate aggregate read through `core-health`. The SDK supplies minimum/average/maximum; measurement count comes from paginated resting-heart-rate records, with one reading per record.
+- Added `GetRestingHeartRateYesterdayUseCase` and `GetRestingHeartRateLastYearUseCase`. The latter uses the same history-support and permission gate as the existing annual heart-rate read.
+- `GhcRangeUiState.Display` stays flat: the original two fields are preserved, with `aggregatedYesterdayRestingHeartRate` and `aggregatedLastYearRestingHeartRate` added. All four summaries load together before `HeartRateFetched`; any read failure produces the existing full-screen error.
+- `READ_RESTING_HEART_RATE` is declared in the manifest and included in startup checks, the initial permission request, and result validation. The explanation's data-use text includes resting heart rate. Summary cards do not request permissions.
+- Debug APK and domain/mobile test sources compiled successfully; static diff checks passed. No tests were executed and no ADB, emulator, or screenshots were used. Changes remain uncommitted.

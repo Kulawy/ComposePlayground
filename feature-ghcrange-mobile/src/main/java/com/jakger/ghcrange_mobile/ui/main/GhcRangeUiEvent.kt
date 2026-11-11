@@ -16,8 +16,10 @@ sealed interface GhcRangeUiEvent : UiEvent {
     data object PermissionSettingsClosed : GhcRangeUiEvent
     data class PermissionUiEffectLaunched(val effect: GhcRangeUiSideEffect.UiEffect) : GhcRangeUiEvent
     data object PermissionUiLaunchFailed : GhcRangeUiEvent
-
     data class HeartRateFetched(
-        val heartRate: HeartRateAggregatedStats
+        val yesterdayHeartRate: HeartRateAggregatedStats,
+        val lastYearHeartRate: HeartRateAggregatedStats,
+        val yesterdayRestingHeartRate: HeartRateAggregatedStats,
+        val lastYearRestingHeartRate: HeartRateAggregatedStats,
     ) : GhcRangeUiEvent
 }

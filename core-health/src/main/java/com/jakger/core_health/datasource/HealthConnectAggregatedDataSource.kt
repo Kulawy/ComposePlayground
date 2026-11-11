@@ -6,6 +6,7 @@ import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -85,6 +86,18 @@ class HealthConnectAggregatedDataSource @Inject constructor(
                     HeartRateRecord.BPM_AVG,
                     HeartRateRecord.BPM_MAX,
                     HeartRateRecord.MEASUREMENTS_COUNT,
+                ),
+                timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
+            )
+        )
+
+    suspend fun getRestingHeartRate(startTime: Instant, endTime: Instant) =
+        healthConnectClient.aggregate(
+            AggregateRequest(
+                metrics = setOf(
+                    RestingHeartRateRecord.BPM_MIN,
+                    RestingHeartRateRecord.BPM_AVG,
+                    RestingHeartRateRecord.BPM_MAX,
                 ),
                 timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
             )

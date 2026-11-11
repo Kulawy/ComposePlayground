@@ -5,10 +5,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.jakger.core_arch.mvi.MviViewModel
 import com.jakger.core_common.domain.fold
+import com.jakger.core_common.domain.DomainError
 import com.jakger.core_common.logging.AppLog
 import com.jakger.feature_ghcrange.model.HealthConnectAccess
+import com.jakger.feature_ghcrange.model.HealthConnectError
 import com.jakger.feature_ghcrange.usecase.CheckHealthConnectAvailabilityUseCase
 import com.jakger.feature_ghcrange.usecase.GetHeartRateYesterdayUseCase
+import com.jakger.feature_ghcrange.usecase.GetHeartRateLastYearUseCase
+import com.jakger.feature_ghcrange.usecase.GetRestingHeartRateYesterdayUseCase
+import com.jakger.feature_ghcrange.usecase.GetRestingHeartRateLastYearUseCase
 import com.jakger.feature_ghcrange.usecase.GetStepsForYesterdayUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -26,6 +31,9 @@ class GhcRangeViewModel @Inject constructor(
     reducer: GhcRangeReducer,
     val getStepsForYesterdayUseCase: GetStepsForYesterdayUseCase,
     val getHeartRateYesterdayUseCase: GetHeartRateYesterdayUseCase,
+    private val getHeartRateLastYearUseCase: GetHeartRateLastYearUseCase,
+    private val getRestingHeartRateYesterdayUseCase: GetRestingHeartRateYesterdayUseCase,
+    private val getRestingHeartRateLastYearUseCase: GetRestingHeartRateLastYearUseCase,
     val checkHealthConnectAvailabilityUseCase: CheckHealthConnectAvailabilityUseCase,
     private val savedStateHandle: SavedStateHandle,
 ) : MviViewModel<GhcRangeUiState, GhcRangeUiEvent, GhcRangeUiSideEffect>(reducer) {
@@ -83,22 +91,26 @@ class GhcRangeViewModel @Inject constructor(
                     _uiEffect.send(effect)
                 }
                 GhcRangeUiSideEffect.FetchHealthData -> fetchHealthData()
+                GhcRangeUiSideEffect.CheckHealthDataPermissions -> checkHealthConnectAvailability(checkOnly = true)
                 GhcRangeUiSideEffect.CheckHealthDataAvailability -> checkHealthConnectAvailability()
                 GhcRangeUiSideEffect.None -> Unit
             }
         }
     }
 
-    private suspend fun checkHealthConnectAvailability() {
+    private suspend fun checkHealthConnectAvailability(checkOnly: Boolean = false) {
         checkHealthConnectAvailabilityUseCase().run {
             AppLog.d { "HealthConnectAccess value: $this" }
             when (this) {
                 is HealthConnectAccess.Granted -> {
-                    dispatchUiEvent(GhcRangeUiEvent.HealthPermissionsGranted)
+                    if (!checkOnly) dispatchUiEvent(GhcRangeUiEvent.HealthPermissionsGranted)
                 }
 
                 is HealthConnectAccess.NeedsPermission -> {
-                    dispatchUiEvent(GhcRangeUiEvent.HealthPermissionsRequired)
+                    dispatchUiEvent(
+                        if (checkOnly) GhcRangeUiEvent.HealthPermissionsDenied
+                        else GhcRangeUiEvent.HealthPermissionsRequired
+                    )
                 }
 
                 is HealthConnectAccess.NeedsInstall -> {
@@ -114,15 +126,43 @@ class GhcRangeViewModel @Inject constructor(
     }
 
     private suspend fun fetchHealthData() {
-        getHeartRateYesterdayUseCase().fold(
-            onSuccess = {
-                dispatchUiEvent(
-                    GhcRangeUiEvent.HeartRateFetched(it)
-                )
-            },
+        val yesterday = getHeartRateYesterdayUseCase().fold(
+            onSuccess = { it },
             onFailure = {
-                dispatchUiEvent(GhcRangeUiEvent.HealthDataUnsupported)
-            }
+                handleHealthDataFailure(it)
+                return
+            },
+        )
+        val lastYear = getHeartRateLastYearUseCase().fold(
+            onSuccess = { it },
+            onFailure = {
+                handleHealthDataFailure(it)
+                return
+            },
+        )
+        val yesterdayResting = getRestingHeartRateYesterdayUseCase().fold(
+            onSuccess = { it },
+            onFailure = {
+                handleHealthDataFailure(it)
+                return
+            },
+        )
+        val lastYearResting = getRestingHeartRateLastYearUseCase().fold(
+            onSuccess = { it },
+            onFailure = {
+                handleHealthDataFailure(it)
+                return
+            },
+        )
+        dispatchUiEvent(
+            GhcRangeUiEvent.HeartRateFetched(yesterday, lastYear, yesterdayResting, lastYearResting)
+        )
+    }
+
+    private fun handleHealthDataFailure(error: DomainError) {
+        dispatchUiEvent(
+            if (error == HealthConnectError.PermissionDenied) GhcRangeUiEvent.HealthPermissionsDenied
+            else GhcRangeUiEvent.HealthDataUnsupported
         )
     }
 }

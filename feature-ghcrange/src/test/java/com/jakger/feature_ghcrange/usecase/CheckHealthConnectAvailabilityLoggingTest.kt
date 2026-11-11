@@ -102,6 +102,7 @@ class CheckHealthConnectAvailabilityLoggingTest {
             private set
 
         override fun availability(): HealthAvailability = availability
+        override suspend fun checkHistoryAccess(): HealthConnectAccess = error("Unexpected history access check")
         override suspend fun checkPermissions(): Boolean {
             permissionChecks++
             permissionFailure?.let { throw it }
@@ -120,5 +121,10 @@ class CheckHealthConnectAvailabilityLoggingTest {
             startTime: Instant,
             endTime: Instant,
         ): DomainResult<HeartRateAggregatedStats> = error("Unexpected data read")
+
+        override suspend fun getAggregatedRestingHeartRateForPeriod(
+            startTime: Instant,
+            endTime: Instant,
+        ): DomainResult<HeartRateAggregatedStats> = error("Unexpected resting heart-rate read")
     }
 }

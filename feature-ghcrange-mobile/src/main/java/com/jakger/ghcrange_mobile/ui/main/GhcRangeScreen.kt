@@ -1,30 +1,13 @@
 package com.jakger.ghcrange_mobile.ui.main
 
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.Text
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -33,9 +16,31 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -47,25 +52,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.capitalize
-import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.HealthConnectFeatures
+import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.jakger.core_common.logging.ComposeLog
 import com.jakger.core_designsystem.ui.components.InfinityTrail
+import com.jakger.feature_ghcrange.model.ui.HeartRateAggregatedStatsUi
 import com.jakger.feature_ghcrange_mobile.R
 import com.jakger.ghcrange_mobile.ui.permissions.PermissionsRationaleContract
 import com.jakger.core_designsystem.R.dimen as dsDim
@@ -77,10 +81,23 @@ import com.jakger.core_designsystem.R.dimen as dsDim
 val healthPermissions = setOf(
     HealthPermission.getReadPermission(StepsRecord::class),
     HealthPermission.getReadPermission(HeartRateRecord::class),
+    HealthPermission.getReadPermission(RestingHeartRateRecord::class),
     HealthPermission.getReadPermission(BloodPressureRecord::class),
     HealthPermission.getReadPermission(DistanceRecord::class),
     HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class)
 )
+
+private fun healthPermissionsToRequest(context: Context): Set<String> {
+    val client = HealthConnectClient.getOrCreate(context.applicationContext)
+    val historySupported = client.features.getFeatureStatus(
+        HealthConnectFeatures.FEATURE_READ_HEALTH_DATA_HISTORY
+    ) == HealthConnectFeatures.FEATURE_STATUS_AVAILABLE
+    return if (historySupported) {
+        healthPermissions + HealthPermission.PERMISSION_READ_HEALTH_DATA_HISTORY
+    } else {
+        healthPermissions
+    }
+}
 
 @Composable
 fun GhcRangeScreen(
@@ -116,13 +133,17 @@ fun GhcRangeScreen(
         contract = requestPermissionContract
     ) { grantedPermissions ->
         ComposeLog.d { "Health Connect permission Launcher result received" }
-        if (grantedPermissions.containsAll(healthPermissions)) {
-            ComposeLog.d { "Health Connect permission Launcher GRANTED" }
-            viewModel.dispatchUiEvent(GhcRangeUiEvent.HealthPermissionsGranted)
-        } else {
-            ComposeLog.d { "Health Connect permission Launcher DENIED" }
-            viewModel.dispatchUiEvent(GhcRangeUiEvent.HealthPermissionsDenied)
+        val event = try {
+            if (grantedPermissions.containsAll(healthPermissionsToRequest(context))) {
+                GhcRangeUiEvent.HealthPermissionsGranted
+            } else {
+                GhcRangeUiEvent.HealthPermissionsDenied
+            }
+        } catch (exception: Exception) {
+            ComposeLog.e(throwable = exception) { "Unable to verify Health Connect permissions" }
+            GhcRangeUiEvent.HealthDataUnsupported
         }
+        viewModel.dispatchUiEvent(event)
     }
 
     LaunchedEffect(viewModel, lifecycleOwner) {
@@ -141,9 +162,8 @@ fun GhcRangeScreen(
                             Unit
                         )
 
-                        GhcRangeUiSideEffect.UiEffect.RequestPermissions -> permissionLauncher.launch(
-                            healthPermissions
-                        )
+                        GhcRangeUiSideEffect.UiEffect.RequestPermissions ->
+                            permissionLauncher.launch(healthPermissionsToRequest(context))
 
                         GhcRangeUiSideEffect.UiEffect.OpenPermissionSettings -> {
                             try {
@@ -161,6 +181,12 @@ fun GhcRangeScreen(
                     viewModel.dispatchUiEvent(GhcRangeUiEvent.PermissionUiLaunchFailed)
                 } catch (exception: SecurityException) {
                     ComposeLog.e(throwable = exception) { "Health Connect permission activity could not be opened" }
+                    viewModel.dispatchUiEvent(GhcRangeUiEvent.PermissionUiLaunchFailed)
+                } catch (exception: IllegalStateException) {
+                    ComposeLog.e(throwable = exception) { "Health Connect is unavailable" }
+                    viewModel.dispatchUiEvent(GhcRangeUiEvent.PermissionUiLaunchFailed)
+                } catch (exception: UnsupportedOperationException) {
+                    ComposeLog.e(throwable = exception) { "Health Connect is unsupported" }
                     viewModel.dispatchUiEvent(GhcRangeUiEvent.PermissionUiLaunchFailed)
                 }
             }
@@ -189,7 +215,6 @@ fun GhcRangeScreen(
 
             is GhcRangeUiState.Display -> DisplayForm(
                 state = screenState,
-                onEvent = { event -> viewModel.dispatchUiEvent(event) }
             )
 
             is GhcRangeUiState.Error -> {
@@ -208,7 +233,6 @@ fun GhcRangeScreen(
 private fun DisplayForm(
     modifier: Modifier = Modifier,
     state: GhcRangeUiState.Display,
-    onEvent: (GhcRangeUiEvent) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -216,69 +240,36 @@ private fun DisplayForm(
             .padding(dimensionResource(dsDim.margin_24)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(dsDim.margin_8))
     ) {
-        item {
-            ElevatedCard(
-                modifier = Modifier
-                    .padding(top = dimensionResource(dsDim.margin_16))
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                shape = MaterialTheme.shapes.extraLarge,
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 64.dp),
-                colors = CardDefaults.elevatedCardColors(
-                    containerColor = MaterialTheme.colorScheme
-                        .surfaceContainerHigh.copy(alpha = 0.8f)
-                ),
+        item(key = "heart_rate_yesterday") {
+            HeartRateCard(
+                title = stringResource(R.string.record_heart_rate_section_description),
+                periodDescription = stringResource(R.string.period_description_yesterday),
             ) {
-                val listItemRowModifier = Modifier
-                    .padding(
-                        horizontal = dimensionResource(dsDim.margin_16)
-                    )
-                    .fillMaxWidth()
-                Row(
-                    modifier = listItemRowModifier
-                        .padding(top = dimensionResource(dsDim.margin_16)),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = Modifier,
-                        text = stringResource(R.string.record_heart_rate_section_description).uppercase(),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        modifier = Modifier,
-                        text = stringResource(R.string.period_description_yesterday).uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    AnimatedHeart()
-                }
-                RecordCardItemDivider()
-                RecordCardItem(
-                    modifier = listItemRowModifier,
-                    recordTitle = stringResource(R.string.record_description_avg_heart_rate),
-                    recordValue = state.aggregatedHeartRate.avgBpm,
-                )
-                RecordCardItemDivider()
-                RecordCardItem(
-                    modifier = listItemRowModifier,
-                    recordTitle = stringResource(R.string.record_description_max_heart_rate),
-                    recordValue = state.aggregatedHeartRate.maxBpm,
-                )
-                RecordCardItemDivider()
-                RecordCardItem(
-                    modifier = listItemRowModifier,
-                    recordTitle = stringResource(R.string.record_description_min_heart_rate),
-                    recordValue = state.aggregatedHeartRate.minBpm,
-                )
-                RecordCardItemDivider()
-                RecordCardItem(
-                    modifier = listItemRowModifier
-                        .padding(bottom = dimensionResource(dsDim.margin_16)),
-                    recordTitle = stringResource(R.string.record_description_measurements_count),
-                    recordValue = state.aggregatedHeartRate.measurementsCount
-                )
+                HeartRateStatistics(state.aggregatedYesterdayHeartRate)
+            }
+        }
+        item(key = "heart_rate_last_year") {
+            HeartRateCard(
+                title = stringResource(R.string.record_heart_rate_section_description),
+                periodDescription = stringResource(R.string.period_description_last_year),
+            ) {
+                HeartRateStatistics(state.aggregatedLastYearHeartRate)
+            }
+        }
+        item(key = "resting_heart_rate_yesterday") {
+            HeartRateCard(
+                title = stringResource(R.string.record_resting_heart_rate_section_description),
+                periodDescription = stringResource(R.string.period_description_yesterday),
+            ) {
+                HeartRateStatistics(state.aggregatedYesterdayRestingHeartRate)
+            }
+        }
+        item(key = "resting_heart_rate_last_year") {
+            HeartRateCard(
+                title = stringResource(R.string.record_resting_heart_rate_section_description),
+                periodDescription = stringResource(R.string.period_description_last_year),
+            ) {
+                HeartRateStatistics(state.aggregatedLastYearRestingHeartRate)
             }
         }
 //            items(records) { record ->
@@ -329,6 +320,65 @@ private fun DisplayForm(
 //                    }
 //                }
     }
+}
+
+@Composable
+private fun HeartRateCard(
+    title: String,
+    periodDescription: String,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    ElevatedCard(
+        modifier = Modifier
+            .padding(top = dimensionResource(dsDim.margin_16))
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        shape = MaterialTheme.shapes.extraLarge,
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 64.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.8f)
+        ),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(dimensionResource(dsDim.margin_16)),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title.uppercase(),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = periodDescription.uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+            AnimatedHeart()
+        }
+        RecordCardItemDivider()
+        content()
+    }
+}
+
+@Composable
+private fun ColumnScope.HeartRateStatistics(stats: HeartRateAggregatedStatsUi) {
+    val rowModifier = Modifier
+        .padding(horizontal = dimensionResource(dsDim.margin_16))
+        .fillMaxWidth()
+    RecordCardItem(rowModifier, stringResource(R.string.record_description_avg_heart_rate), stats.avgBpm)
+    RecordCardItemDivider()
+    RecordCardItem(rowModifier, stringResource(R.string.record_description_max_heart_rate), stats.maxBpm)
+    RecordCardItemDivider()
+    RecordCardItem(rowModifier, stringResource(R.string.record_description_min_heart_rate), stats.minBpm)
+    RecordCardItemDivider()
+    RecordCardItem(
+        modifier = rowModifier.padding(bottom = dimensionResource(dsDim.margin_16)),
+        recordTitle = stringResource(R.string.record_description_measurements_count),
+        recordValue = stats.measurementsCount,
+    )
 }
 
 @Composable

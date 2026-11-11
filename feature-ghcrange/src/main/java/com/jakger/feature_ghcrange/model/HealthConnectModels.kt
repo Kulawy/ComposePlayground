@@ -14,5 +14,6 @@ sealed interface HealthConnectAccess {
 
 sealed interface HealthConnectError: DomainError {
     data object PermissionDenied : HealthConnectError
+    data object HistoryReadUnsupported : HealthConnectError
     data object ServiceUnavailable : HealthConnectError
 }

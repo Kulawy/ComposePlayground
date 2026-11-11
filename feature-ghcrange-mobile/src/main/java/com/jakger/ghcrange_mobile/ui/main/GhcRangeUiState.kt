@@ -14,9 +14,9 @@ sealed interface GhcRangeUiState : UiState {
     data class AwaitingPermissionSettings(val launchPending: Boolean = true) : GhcRangeUiState
 
     @Stable
-    sealed interface Error: GhcRangeUiState {
-        data object PermissionsNotGranted: Error
-        data object HealthDataNotAvailable: Error
+    sealed interface Error : GhcRangeUiState {
+        data object PermissionsNotGranted : Error
+        data object HealthDataNotAvailable : Error
     }
 
     @Stable
@@ -24,9 +24,10 @@ sealed interface GhcRangeUiState : UiState {
 
     @Stable
     data class Display(
-        val aggregatedHeartRate: HeartRateAggregatedStatsUi,
-//        val activityRecords: List<HealthRecord>,
-//        val vitalsRecords: List<HealthRecord>
+        val aggregatedYesterdayHeartRate: HeartRateAggregatedStatsUi,
+        val aggregatedLastYearHeartRate: HeartRateAggregatedStatsUi,
+        val aggregatedYesterdayRestingHeartRate: HeartRateAggregatedStatsUi,
+        val aggregatedLastYearRestingHeartRate: HeartRateAggregatedStatsUi,
     ) : GhcRangeUiState
 }
 

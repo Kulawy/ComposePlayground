@@ -4,6 +4,7 @@ import com.jakger.core_arch.mvi.UiSideEffect
 
 sealed interface GhcRangeUiSideEffect : UiSideEffect {
     data object FetchHealthData : GhcRangeUiSideEffect
+    data object CheckHealthDataPermissions : GhcRangeUiSideEffect
     data object CheckHealthDataAvailability : GhcRangeUiSideEffect
     data object None : GhcRangeUiSideEffect
 

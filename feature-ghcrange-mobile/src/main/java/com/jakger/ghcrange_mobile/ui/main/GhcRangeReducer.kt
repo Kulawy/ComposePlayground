@@ -10,7 +10,16 @@ class GhcRangeReducer @Inject constructor() :
         event: GhcRangeUiEvent,
         state: GhcRangeUiState
     ): Pair<GhcRangeUiState, GhcRangeUiSideEffect> {
+        if (event == GhcRangeUiEvent.HealthPermissionsDenied) {
+            return GhcRangeUiState.Error.PermissionsNotGranted to GhcRangeUiSideEffect.None
+        }
+        if (event == GhcRangeUiEvent.HealthDataUnsupported) {
+            return GhcRangeUiState.Error.HealthDataNotAvailable to GhcRangeUiSideEffect.None
+        }
         if (event == GhcRangeUiEvent.ScreenResumed) {
+            if (state is GhcRangeUiState.Display) {
+                return state to GhcRangeUiSideEffect.CheckHealthDataPermissions
+            }
             return state to (GhcRangePermissionStage.from(state)?.pendingEffect ?: GhcRangeUiSideEffect.None)
         }
         if (event is GhcRangeUiEvent.PermissionUiEffectLaunched) {
@@ -25,16 +34,12 @@ class GhcRangeReducer @Inject constructor() :
             is GhcRangeUiState.AwaitingPermissionExplanation -> when (event) {
                 GhcRangeUiEvent.RequestPermission ->
                     GhcRangeUiState.AwaitingPermissionResult() to GhcRangeUiSideEffect.UiEffect.RequestPermissions
-                GhcRangeUiEvent.HealthPermissionsDenied ->
-                    GhcRangeUiState.Error.PermissionsNotGranted to GhcRangeUiSideEffect.None
                 GhcRangeUiEvent.OnBackPressed -> state to GhcRangeUiSideEffect.Navigation.Back
                 else -> illegalEventForState(state, event)
             }
             is GhcRangeUiState.AwaitingPermissionResult -> when (event) {
                 GhcRangeUiEvent.HealthPermissionsGranted ->
                     GhcRangeUiState.Loading to GhcRangeUiSideEffect.FetchHealthData
-                GhcRangeUiEvent.HealthPermissionsDenied ->
-                    GhcRangeUiState.Error.PermissionsNotGranted to GhcRangeUiSideEffect.None
                 GhcRangeUiEvent.OnBackPressed -> state to GhcRangeUiSideEffect.Navigation.Back
                 else -> illegalEventForState(state, event)
             }
@@ -70,10 +75,12 @@ class GhcRangeReducer @Inject constructor() :
     ): Pair<GhcRangeUiState, GhcRangeUiSideEffect> =
         when (event) {
             is GhcRangeUiEvent.HeartRateFetched ->
-                GhcRangeUiState.Display(event.heartRate.toUi()) to GhcRangeUiSideEffect.None
-
-            GhcRangeUiEvent.HealthDataUnsupported ->
-                GhcRangeUiState.Error.HealthDataNotAvailable to GhcRangeUiSideEffect.None
+                GhcRangeUiState.Display(
+                    aggregatedYesterdayHeartRate = event.yesterdayHeartRate.toUi(),
+                    aggregatedLastYearHeartRate = event.lastYearHeartRate.toUi(),
+                    aggregatedYesterdayRestingHeartRate = event.yesterdayRestingHeartRate.toUi(),
+                    aggregatedLastYearRestingHeartRate = event.lastYearRestingHeartRate.toUi(),
+                ) to GhcRangeUiSideEffect.None
 
             GhcRangeUiEvent.OnBackPressed -> this to GhcRangeUiSideEffect.Navigation.Back
             else -> illegalEventForState(this, event)
@@ -109,17 +116,15 @@ class GhcRangeReducer @Inject constructor() :
 
             is GhcRangeUiEvent.HeartRateFetched ->
                 GhcRangeUiState.Display(
-                    event.heartRate.toUi()
+                    aggregatedYesterdayHeartRate = event.yesterdayHeartRate.toUi(),
+                    aggregatedLastYearHeartRate = event.lastYearHeartRate.toUi(),
+                    aggregatedYesterdayRestingHeartRate = event.yesterdayRestingHeartRate.toUi(),
+                    aggregatedLastYearRestingHeartRate = event.lastYearRestingHeartRate.toUi(),
                 ) to GhcRangeUiSideEffect.None
-
-            is GhcRangeUiEvent.HealthDataUnsupported ->
-                GhcRangeUiState.Error.HealthDataNotAvailable to GhcRangeUiSideEffect.None
 
             is GhcRangeUiEvent.HealthPermissionsGranted ->
                 GhcRangeUiState.Loading to GhcRangeUiSideEffect.FetchHealthData
 
-            is GhcRangeUiEvent.HealthPermissionsDenied ->
-                GhcRangeUiState.Error.PermissionsNotGranted to GhcRangeUiSideEffect.None
 
             GhcRangeUiEvent.HealthPermissionsRequired ->
                 GhcRangeUiState.AwaitingPermissionExplanation() to GhcRangeUiSideEffect.UiEffect.ExplainPermissions

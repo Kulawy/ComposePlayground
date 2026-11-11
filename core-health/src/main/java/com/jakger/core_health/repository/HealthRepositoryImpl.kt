@@ -7,6 +7,7 @@ import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
 import com.jakger.core_arch.di.IoDispatcher
 import com.jakger.core_common.domain.DomainError
@@ -14,6 +15,7 @@ import com.jakger.core_common.domain.DomainResult
 import com.jakger.core_health.datasource.HealthConnectAggregatedDataSource
 import com.jakger.core_health.datasource.HealthConnectDataSource
 import com.jakger.feature_ghcrange.model.HealthAvailability
+import com.jakger.feature_ghcrange.model.HealthConnectAccess
 import com.jakger.feature_ghcrange.model.HealthConnectError
 import com.jakger.feature_ghcrange.model.HeartRateAggregatedStats
 import com.jakger.feature_ghcrange.model.HeartRateSample
@@ -28,6 +30,7 @@ import kotlin.coroutines.cancellation.CancellationException
 val healthPermissions = setOf(
     HealthPermission.getReadPermission(StepsRecord::class),
     HealthPermission.getReadPermission(HeartRateRecord::class),
+    HealthPermission.getReadPermission(RestingHeartRateRecord::class),
     HealthPermission.getReadPermission(BloodPressureRecord::class),
     HealthPermission.getReadPermission(DistanceRecord::class),
     HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class)
@@ -47,8 +50,24 @@ class HealthConnectSdkRepositoryImpl @Inject constructor(
             else -> HealthAvailability.UNSUPPORTED
         }
 
-    override suspend fun checkPermissions(): Boolean {
-        return healthDataSource.getGrantedPermissions().containsAll(healthPermissions)
+    override suspend fun checkPermissions(): Boolean = withContext(ioDispatcher) {
+        // Include supported historical access in the initial explanation and permission request.
+        val startupPermissions = if (healthDataSource.isHistoryReadSupported()) {
+            healthPermissions + HealthPermission.PERMISSION_READ_HEALTH_DATA_HISTORY
+        } else {
+            healthPermissions
+        }
+        healthDataSource.getGrantedPermissions().containsAll(startupPermissions)
+    }
+
+    override suspend fun checkHistoryAccess(): HealthConnectAccess = withContext(ioDispatcher) {
+        when {
+            availability() != HealthAvailability.AVAILABLE -> HealthConnectAccess.Unavailable
+            !healthDataSource.isHistoryReadSupported() -> HealthConnectAccess.Unsupported
+            HealthPermission.PERMISSION_READ_HEALTH_DATA_HISTORY in healthDataSource.getGrantedPermissions() ->
+                HealthConnectAccess.Granted
+            else -> HealthConnectAccess.NeedsPermission
+        }
     }
 
     override suspend fun getStepsForPeriod(
@@ -84,6 +103,21 @@ class HealthConnectSdkRepositoryImpl @Inject constructor(
                 avgBpm = result[HeartRateRecord.BPM_AVG],
                 maxBpm = result[HeartRateRecord.BPM_MAX],
                 measurementsCount = result[HeartRateRecord.MEASUREMENTS_COUNT] ?: 0
+            )
+        }
+    }
+
+    override suspend fun getAggregatedRestingHeartRateForPeriod(
+        startTime: Instant,
+        endTime: Instant,
+    ): DomainResult<HeartRateAggregatedStats> = withContext(ioDispatcher) {
+        safeCall {
+            val result = healthAggregatedDataSource.getRestingHeartRate(startTime, endTime)
+            HeartRateAggregatedStats(
+                minBpm = result[RestingHeartRateRecord.BPM_MIN],
+                avgBpm = result[RestingHeartRateRecord.BPM_AVG],
+                maxBpm = result[RestingHeartRateRecord.BPM_MAX],
+                measurementsCount = healthDataSource.countRestingHeartRate(startTime, endTime),
             )
         }
     }

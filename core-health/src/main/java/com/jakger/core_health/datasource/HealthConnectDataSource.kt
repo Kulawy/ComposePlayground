@@ -2,7 +2,9 @@ package com.jakger.core_health.datasource
 
 import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.HealthConnectFeatures
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import com.jakger.core_arch.di.IoDispatcher
@@ -33,6 +35,10 @@ class HealthConnectDataSource @Inject constructor(
 
     fun sdkStatus(): Int = HealthConnectClient.getSdkStatus(appContext)
 
+    fun isHistoryReadSupported(): Boolean =
+        healthConnectClient.features.getFeatureStatus(HealthConnectFeatures.FEATURE_READ_HEALTH_DATA_HISTORY) ==
+            HealthConnectFeatures.FEATURE_STATUS_AVAILABLE
+
     suspend fun getGrantedPermissions() =
         healthConnectClient.permissionController.getGrantedPermissions()
 
@@ -53,5 +59,25 @@ class HealthConnectDataSource @Inject constructor(
                 pageToken = response.pageToken
             } while (pageToken != null)
             records
+        }
+
+    /** Resting heart rate has one measurement per record and no aggregate count metric. */
+    suspend fun countRestingHeartRate(start: Instant, end: Instant): Long =
+        withContext(ioDispatcher) {
+            var count = 0L
+            var pageToken: String? = null
+            do {
+                val response = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = RestingHeartRateRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(start, end),
+                        pageSize = 1000,
+                        pageToken = pageToken,
+                    )
+                )
+                count += response.records.size
+                pageToken = response.pageToken?.takeIf { it.isNotEmpty() }
+            } while (pageToken != null)
+            count
         }
 }
