@@ -8,14 +8,6 @@ import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +18,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,7 +26,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
@@ -43,16 +33,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -77,6 +63,9 @@ import com.jakger.core_designsystem.ui.components.InfinityTrail
 import com.jakger.feature_ghcrange.model.ui.HealthParametersAggregatedStatsUi
 import com.jakger.feature_ghcrange.model.ui.HeartRateAggregatedStatsUi
 import com.jakger.feature_ghcrange_mobile.R
+import com.jakger.ghcrange_mobile.ui.components.AnimatedHeart
+import com.jakger.ghcrange_mobile.ui.components.FireTrailingIcon
+import com.jakger.ghcrange_mobile.ui.components.StepsTrailingIcon
 import com.jakger.ghcrange_mobile.ui.permissions.PermissionsRationaleContract
 import com.jakger.core_designsystem.R.dimen as dsDim
 
@@ -487,7 +476,8 @@ private fun ColumnScope.LifeParametersSection(
         label = { Text(stringResource(R.string.total_calories_burned)) },
         modifier = rowModifier,
         singleLine = true,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+        trailingIcon = { FireTrailingIcon() }
     )
     RecordCardItemDivider()
     OutlinedTextField(
@@ -498,7 +488,8 @@ private fun ColumnScope.LifeParametersSection(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = rowModifier,
         singleLine = true,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+        trailingIcon = { FireTrailingIcon() }
     )
     RecordCardItemDivider()
     OutlinedTextField(
@@ -520,7 +511,8 @@ private fun ColumnScope.LifeParametersSection(
         label = { Text(stringResource(R.string.distance)) },
         modifier = rowModifier,
         singleLine = true,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+        trailingIcon = { StepsTrailingIcon() }
     )
     RecordCardItemDivider()
     OutlinedTextField(
@@ -531,7 +523,8 @@ private fun ColumnScope.LifeParametersSection(
         label = { Text(stringResource(R.string.steps)) },
         modifier = rowModifier,
         singleLine = true,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+        trailingIcon = { StepsTrailingIcon() }
     )
 }
 
@@ -566,38 +559,3 @@ fun ColumnScope.RecordCardItemDivider(modifier: Modifier = Modifier) = Horizonta
     thickness = 1.dp,
     color = Color.DarkGray
 )
-
-@Composable
-fun AnimatedHeart(modifier: Modifier = Modifier) {
-    val infiniteTransition = rememberInfiniteTransition(label = "HeartbeatTransition")
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = keyframes {
-                durationMillis = 1200
-                1.0f at 0
-                1.333f at 140 using FastOutSlowInEasing
-                1.12f at 260 using FastOutLinearInEasing
-                1.23f at 400 using FastOutSlowInEasing
-                1.0f at 600 using LinearOutSlowInEasing
-                1.0f at 1200
-            },
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "HeartbeatScale"
-    )
-
-    Icon(
-        painter = painterResource(R.drawable.ic_ecg_heart_48),
-        contentDescription = "Animated Heart",
-        tint = Color.White,
-        modifier = modifier
-            .size(48.dp)
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-                transformOrigin = TransformOrigin.Center
-            }
-    )
-}
