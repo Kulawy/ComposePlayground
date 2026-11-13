@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.jakger.feature_login_mobile"
+    namespace = "com.jakger.feature_auth_mobile"
     compileSdk {
         version = release(37)
     }

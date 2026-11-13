@@ -14,12 +14,12 @@
             <option value="$PROJECT_DIR$/core-common" />
             <option value="$PROJECT_DIR$/core-designsystem" />
             <option value="$PROJECT_DIR$/core-health" />
+            <option value="$PROJECT_DIR$/feature-auth-mobile" />
             <option value="$PROJECT_DIR$/feature-dashboard" />
             <option value="$PROJECT_DIR$/feature-dashboard-api" />
             <option value="$PROJECT_DIR$/feature-ghcrange" />
             <option value="$PROJECT_DIR$/feature-ghcrange-mobile" />
             <option value="$PROJECT_DIR$/feature-ghcrange-mobile-api" />
-            <option value="$PROJECT_DIR$/feature-login-mobile" />
             <option value="$PROJECT_DIR$/feature-maplibremaps" />
             <option value="$PROJECT_DIR$/feature-maplibremaps-api" />
           </set>
