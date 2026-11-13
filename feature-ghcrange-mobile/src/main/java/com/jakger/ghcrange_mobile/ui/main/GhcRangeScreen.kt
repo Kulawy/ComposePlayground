@@ -10,6 +10,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,9 +51,11 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.FloorsClimbedRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -79,7 +82,9 @@ val healthPermissions = setOf(
     HealthPermission.getReadPermission(RestingHeartRateRecord::class),
     HealthPermission.getReadPermission(BloodPressureRecord::class),
     HealthPermission.getReadPermission(DistanceRecord::class),
-    HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class)
+    HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+    HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+    HealthPermission.getReadPermission(FloorsClimbedRecord::class),
 )
 
 private fun healthPermissionsToRequest(context: Context): Set<String> {
@@ -456,7 +461,6 @@ fun RecordLifeStyleParametersStatusCardItem(
                 )
             }
         }
-        RecordCardItemDivider()
         content()
     }
 }
@@ -466,34 +470,49 @@ private fun ColumnScope.LifeParametersSection(
     lifeParametersState: HealthParametersAggregatedStatsUi
 ) {
     val rowModifier = Modifier
-        .padding(horizontal = dimensionResource(dsDim.margin_16))
+        .padding(
+            bottom = dimensionResource(dsDim.margin_16),
+            start = dimensionResource(dsDim.margin_16),
+            end = dimensionResource(dsDim.margin_16)
+        )
         .fillMaxWidth()
+    val totalCaloriesBurned = lifeParametersState.totalCaloriesBurned?.let {
+        "$it ${stringResource(R.string.unit_kilocalories)}"
+    } ?: stringResource(R.string.missing_data)
     OutlinedTextField(
-        value = lifeParametersState.totalCaloriesBurned,
+        value = totalCaloriesBurned,
         onValueChange = { },
         readOnly = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        label = { Text(stringResource(R.string.total_calories_burned)) },
+        label = {
+            Text(stringResource(R.string.total_calories_burned))
+        },
+        modifier = rowModifier.clickable(
+            enabled = false,
+            onClick = {}
+        ),
+        singleLine = true,
+        shape = MaterialTheme.shapes.medium,
+        trailingIcon = { FireTrailingIcon() }
+    )
+    val activeCaloriesBurned = lifeParametersState.totalCaloriesBurned?.let {
+        "$it ${stringResource(R.string.unit_kilocalories)}"
+    } ?: stringResource(R.string.missing_data)
+    OutlinedTextField(
+        value = activeCaloriesBurned,
+        onValueChange = { },
+        readOnly = true,
+        label = {
+            Text("${stringResource(R.string.active_calories_burned)} ${stringResource(R.string.unit_kilocalories)}")
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = rowModifier,
         singleLine = true,
         shape = MaterialTheme.shapes.medium,
         trailingIcon = { FireTrailingIcon() }
     )
-    RecordCardItemDivider()
     OutlinedTextField(
-        value = lifeParametersState.activeCaloriesBurned,
-        onValueChange = { },
-        readOnly = true,
-        label = { Text(stringResource(R.string.active_calories_burned)) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = rowModifier,
-        singleLine = true,
-        shape = MaterialTheme.shapes.medium,
-        trailingIcon = { FireTrailingIcon() }
-    )
-    RecordCardItemDivider()
-    OutlinedTextField(
-        value = lifeParametersState.floors,
+        value = lifeParametersState.floors ?: stringResource(R.string.missing_data),
         onValueChange = { },
         readOnly = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -502,21 +521,24 @@ private fun ColumnScope.LifeParametersSection(
         singleLine = true,
         shape = MaterialTheme.shapes.medium
     )
-    RecordCardItemDivider()
+    val distance = lifeParametersState.distance?.let {
+        "$it ${stringResource(R.string.unit_meters)}"
+    } ?: stringResource(R.string.missing_data)
     OutlinedTextField(
-        value = lifeParametersState.distance,
+        value = distance,
         onValueChange = { },
         readOnly = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        label = { Text(stringResource(R.string.distance)) },
+        label = {
+            Text("${stringResource(R.string.distance)} ${stringResource(R.string.unit_meters)}")
+        },
         modifier = rowModifier,
         singleLine = true,
         shape = MaterialTheme.shapes.medium,
         trailingIcon = { StepsTrailingIcon() }
     )
-    RecordCardItemDivider()
     OutlinedTextField(
-        value = lifeParametersState.steps,
+        value = lifeParametersState.steps ?: stringResource(R.string.missing_data),
         onValueChange = { },
         readOnly = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

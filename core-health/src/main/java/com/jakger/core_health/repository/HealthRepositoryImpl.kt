@@ -6,9 +6,11 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.FloorsClimbedRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import com.jakger.core_arch.di.IoDispatcher
 import com.jakger.core_common.domain.DomainError
 import com.jakger.core_common.domain.DomainResult
@@ -33,7 +35,9 @@ val healthPermissions = setOf(
     HealthPermission.getReadPermission(RestingHeartRateRecord::class),
     HealthPermission.getReadPermission(BloodPressureRecord::class),
     HealthPermission.getReadPermission(DistanceRecord::class),
-    HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class)
+    HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+    HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+    HealthPermission.getReadPermission(FloorsClimbedRecord::class),
 )
 
 class HealthConnectSdkRepositoryImpl @Inject constructor(
@@ -73,10 +77,47 @@ class HealthConnectSdkRepositoryImpl @Inject constructor(
     override suspend fun getStepsForPeriod(
         startTime: Instant,
         endTime: Instant
-    ): DomainResult<Long> = withContext(ioDispatcher) {
+    ): DomainResult<Long?> = withContext(ioDispatcher) {
         safeCall {
             healthAggregatedDataSource.getStepsForPeriod(startTime, endTime)
-                ?: throw NoSuchElementException()
+        }
+    }
+
+    override suspend fun getActiveCaloriesBurnedForPeriod(
+        startTime: Instant,
+        endTime: Instant,
+    ): DomainResult<Double?> = withContext(ioDispatcher) {
+        safeCall {
+            healthAggregatedDataSource.getActiveCaloriesBurned(startTime, endTime)
+        }
+    }
+
+    override suspend fun getTotalCaloriesBurnedForPeriod(
+        startTime: Instant,
+        endTime: Instant,
+    ): DomainResult<Double?> = withContext(ioDispatcher) {
+        safeCall {
+            healthAggregatedDataSource.getTotalCaloriesBurned(startTime, endTime)
+        }
+    }
+
+    override suspend fun getDistanceForPeriod(
+        startTime: Instant,
+        endTime: Instant,
+    ): DomainResult<Double?> = withContext(ioDispatcher) {
+        safeCall {
+            val result = healthAggregatedDataSource.getDistanceRecord(startTime, endTime)
+            result[DistanceRecord.DISTANCE_TOTAL]?.inMeters
+        }
+    }
+
+    override suspend fun getFloorsClimbedForPeriod(
+        startTime: Instant,
+        endTime: Instant,
+    ): DomainResult<Double?> = withContext(ioDispatcher) {
+        safeCall {
+            val result = healthAggregatedDataSource.getFloorsClimbedRecord(startTime, endTime)
+            result[FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL]
         }
     }
 

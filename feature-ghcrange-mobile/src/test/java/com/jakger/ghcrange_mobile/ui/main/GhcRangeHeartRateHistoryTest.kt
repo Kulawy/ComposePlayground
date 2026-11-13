@@ -1,5 +1,6 @@
 package com.jakger.ghcrange_mobile.ui.main
 
+import com.jakger.feature_ghcrange.model.HealthParametersAggregatedStats
 import com.jakger.feature_ghcrange.model.HeartRateAggregatedStats
 import com.jakger.feature_ghcrange.model.toUi
 import org.junit.Assert.assertEquals
@@ -11,17 +12,40 @@ class GhcRangeHeartRateHistoryTest {
     private val lastYear = HeartRateAggregatedStats(45, 65, 180, 1200)
     private val yesterdayResting = HeartRateAggregatedStats(50, 60, 70, 2)
     private val lastYearResting = HeartRateAggregatedStats(40, 55, 85, 300)
+    private val healthParametersYesterday = HealthParametersAggregatedStats(
+        floors = 2.5,
+        distanceMeters = 1200.25,
+        steps = 1600,
+        activeCaloriesBurnedKcal = 200.5,
+        totalCaloriesBurnedKcal = 2200.75,
+    )
+    private val healthParametersLastYear = HealthParametersAggregatedStats(
+        floors = 450.5,
+        distanceMeters = 345000.5,
+        steps = 460000,
+        activeCaloriesBurnedKcal = 85000.25,
+        totalCaloriesBurnedKcal = 800000.5,
+    )
     private val displayed = GhcRangeUiState.Display(
         aggregatedYesterdayHeartRate = yesterday.toUi(),
         aggregatedLastYearHeartRate = lastYear.toUi(),
         aggregatedYesterdayRestingHeartRate = yesterdayResting.toUi(),
         aggregatedLastYearRestingHeartRate = lastYearResting.toUi(),
+        healthParametersYesterday = healthParametersYesterday.toUi(),
+        healthParametersLastYear = healthParametersLastYear.toUi(),
     )
 
     @Test
-    fun `all four heart rate summaries are displayed together in the flat display state`() {
+    fun `all summaries are displayed together in the flat display state`() {
         val (state, effect) = reducer(
-            GhcRangeUiEvent.HeartRateFetched(yesterday, lastYear, yesterdayResting, lastYearResting),
+            GhcRangeUiEvent.HealthDataFetched(
+                yesterdayHeartRate = yesterday,
+                lastYearHeartRate = lastYear,
+                yesterdayRestingHeartRate = yesterdayResting,
+                lastYearRestingHeartRate = lastYearResting,
+                healthParametersYesterday = healthParametersYesterday,
+                healthParametersLastYear = healthParametersLastYear,
+            ),
             GhcRangeUiState.Loading,
         )
         assertEquals(displayed, state)

@@ -94,6 +94,26 @@ class GetHeartRateLastYearUseCaseTest {
         override suspend fun getStepsForPeriod(startTime: Instant, endTime: Instant): DomainResult<Long> =
             error("Unexpected steps read")
 
+        override suspend fun getActiveCaloriesBurnedForPeriod(
+            startTime: Instant,
+            endTime: Instant,
+        ): DomainResult<Double> = error("Unexpected active calories read")
+
+        override suspend fun getTotalCaloriesBurnedForPeriod(
+            startTime: Instant,
+            endTime: Instant,
+        ): DomainResult<Double> = error("Unexpected total calories read")
+
+        override suspend fun getDistanceForPeriod(
+            startTime: Instant,
+            endTime: Instant,
+        ): DomainResult<Double> = error("Unexpected distance read")
+
+        override suspend fun getFloorsClimbedForPeriod(
+            startTime: Instant,
+            endTime: Instant,
+        ): DomainResult<Double> = error("Unexpected floors read")
+
         override suspend fun getHeartRateForPeriod(
             startTime: Instant,
             endTime: Instant,

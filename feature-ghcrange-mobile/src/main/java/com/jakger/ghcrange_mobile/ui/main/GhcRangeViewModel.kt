@@ -1,20 +1,23 @@
 package com.jakger.ghcrange_mobile.ui.main
 
 import androidx.annotation.MainThread
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.viewpager.R
 import com.jakger.core_arch.mvi.MviViewModel
-import com.jakger.core_common.domain.fold
 import com.jakger.core_common.domain.DomainError
+import com.jakger.core_common.domain.fold
 import com.jakger.core_common.logging.AppLog
 import com.jakger.feature_ghcrange.model.HealthConnectAccess
 import com.jakger.feature_ghcrange.model.HealthConnectError
 import com.jakger.feature_ghcrange.usecase.CheckHealthConnectAvailabilityUseCase
+import com.jakger.feature_ghcrange.usecase.GetHealthParametersLastYearUseCase
+import com.jakger.feature_ghcrange.usecase.GetHealthParametersYesterdayUseCase
 import com.jakger.feature_ghcrange.usecase.GetHeartRateYesterdayUseCase
 import com.jakger.feature_ghcrange.usecase.GetHeartRateLastYearUseCase
 import com.jakger.feature_ghcrange.usecase.GetRestingHeartRateYesterdayUseCase
 import com.jakger.feature_ghcrange.usecase.GetRestingHeartRateLastYearUseCase
-import com.jakger.feature_ghcrange.usecase.GetStepsForYesterdayUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,11 +28,13 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.ZonedDateTime
 
 @HiltViewModel
 class GhcRangeViewModel @Inject constructor(
     reducer: GhcRangeReducer,
-    val getStepsForYesterdayUseCase: GetStepsForYesterdayUseCase,
+    private val getHealthParametersYesterdayUseCase: GetHealthParametersYesterdayUseCase,
+    private val getHealthParametersLastYearUseCase: GetHealthParametersLastYearUseCase,
     val getHeartRateYesterdayUseCase: GetHeartRateYesterdayUseCase,
     private val getHeartRateLastYearUseCase: GetHeartRateLastYearUseCase,
     private val getRestingHeartRateYesterdayUseCase: GetRestingHeartRateYesterdayUseCase,
@@ -126,6 +131,7 @@ class GhcRangeViewModel @Inject constructor(
     }
 
     private suspend fun fetchHealthData() {
+        val now = ZonedDateTime.now()
         val yesterday = getHeartRateYesterdayUseCase().fold(
             onSuccess = { it },
             onFailure = {
@@ -154,8 +160,29 @@ class GhcRangeViewModel @Inject constructor(
                 return
             },
         )
+        val healthParametersYesterday = getHealthParametersYesterdayUseCase(now).fold(
+            onSuccess = { it },
+            onFailure = {
+                handleHealthDataFailure(it)
+                return
+            },
+        )
+        val healthParametersLastYear = getHealthParametersLastYearUseCase(now).fold(
+            onSuccess = { it },
+            onFailure = {
+                handleHealthDataFailure(it)
+                return
+            },
+        )
         dispatchUiEvent(
-            GhcRangeUiEvent.HeartRateFetched(yesterday, lastYear, yesterdayResting, lastYearResting)
+            GhcRangeUiEvent.HealthDataFetched(
+                yesterdayHeartRate = yesterday,
+                lastYearHeartRate = lastYear,
+                yesterdayRestingHeartRate = yesterdayResting,
+                lastYearRestingHeartRate = lastYearResting,
+                healthParametersYesterday = healthParametersYesterday,
+                healthParametersLastYear = healthParametersLastYear,
+            )
         )
     }
 

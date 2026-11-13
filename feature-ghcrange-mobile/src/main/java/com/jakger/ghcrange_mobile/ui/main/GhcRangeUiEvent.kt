@@ -1,6 +1,7 @@
 package com.jakger.ghcrange_mobile.ui.main
 
 import com.jakger.core_arch.mvi.UiEvent
+import com.jakger.feature_ghcrange.model.HealthParametersAggregatedStats
 import com.jakger.feature_ghcrange.model.HeartRateAggregatedStats
 
 sealed interface GhcRangeUiEvent : UiEvent {
@@ -16,10 +17,12 @@ sealed interface GhcRangeUiEvent : UiEvent {
     data object PermissionSettingsClosed : GhcRangeUiEvent
     data class PermissionUiEffectLaunched(val effect: GhcRangeUiSideEffect.UiEffect) : GhcRangeUiEvent
     data object PermissionUiLaunchFailed : GhcRangeUiEvent
-    data class HeartRateFetched(
+    data class HealthDataFetched(
         val yesterdayHeartRate: HeartRateAggregatedStats,
         val lastYearHeartRate: HeartRateAggregatedStats,
         val yesterdayRestingHeartRate: HeartRateAggregatedStats,
         val lastYearRestingHeartRate: HeartRateAggregatedStats,
+        val healthParametersYesterday: HealthParametersAggregatedStats,
+        val healthParametersLastYear: HealthParametersAggregatedStats,
     ) : GhcRangeUiEvent
 }

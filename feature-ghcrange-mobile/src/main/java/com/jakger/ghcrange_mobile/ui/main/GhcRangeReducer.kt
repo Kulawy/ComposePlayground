@@ -74,12 +74,14 @@ class GhcRangeReducer @Inject constructor() :
         event: GhcRangeUiEvent
     ): Pair<GhcRangeUiState, GhcRangeUiSideEffect> =
         when (event) {
-            is GhcRangeUiEvent.HeartRateFetched ->
+            is GhcRangeUiEvent.HealthDataFetched ->
                 GhcRangeUiState.Display(
                     aggregatedYesterdayHeartRate = event.yesterdayHeartRate.toUi(),
                     aggregatedLastYearHeartRate = event.lastYearHeartRate.toUi(),
                     aggregatedYesterdayRestingHeartRate = event.yesterdayRestingHeartRate.toUi(),
                     aggregatedLastYearRestingHeartRate = event.lastYearRestingHeartRate.toUi(),
+                    healthParametersYesterday = event.healthParametersYesterday.toUi(),
+                    healthParametersLastYear = event.healthParametersLastYear.toUi(),
                 ) to GhcRangeUiSideEffect.None
 
             GhcRangeUiEvent.OnBackPressed -> this to GhcRangeUiSideEffect.Navigation.Back
@@ -114,12 +116,14 @@ class GhcRangeReducer @Inject constructor() :
             is GhcRangeUiEvent.CheckHealthDataAvailability ->
                 this to GhcRangeUiSideEffect.CheckHealthDataAvailability
 
-            is GhcRangeUiEvent.HeartRateFetched ->
+            is GhcRangeUiEvent.HealthDataFetched ->
                 GhcRangeUiState.Display(
                     aggregatedYesterdayHeartRate = event.yesterdayHeartRate.toUi(),
                     aggregatedLastYearHeartRate = event.lastYearHeartRate.toUi(),
                     aggregatedYesterdayRestingHeartRate = event.yesterdayRestingHeartRate.toUi(),
                     aggregatedLastYearRestingHeartRate = event.lastYearRestingHeartRate.toUi(),
+                    healthParametersYesterday = event.healthParametersYesterday.toUi(),
+                    healthParametersLastYear = event.healthParametersLastYear.toUi(),
                 ) to GhcRangeUiSideEffect.None
 
             is GhcRangeUiEvent.HealthPermissionsGranted ->

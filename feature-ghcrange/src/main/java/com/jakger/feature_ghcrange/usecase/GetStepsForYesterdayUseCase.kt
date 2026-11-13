@@ -7,7 +7,7 @@ import jakarta.inject.Inject
 class GetStepsForYesterdayUseCase @Inject constructor(
     private val healthRepository: HealthRepository
 ) {
-    suspend operator fun invoke(): DomainResult<Long> {
+    suspend operator fun invoke(): DomainResult<Long?> {
         val startTime = java.time.LocalDate
             .now()
             .atStartOfDay(java.time.ZoneId.systemDefault())

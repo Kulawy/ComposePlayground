@@ -77,7 +77,7 @@ class HealthConnectAggregatedDataSource @Inject constructor(
         healthConnectClient.aggregate(
             AggregateRequest(
                 metrics = setOf(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
-                timeRangeFilter = TimeRangeFilter.between(startTime, Instant.now()),
+                timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
             )
         )[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories
 
@@ -85,9 +85,9 @@ class HealthConnectAggregatedDataSource @Inject constructor(
         healthConnectClient.aggregate(
             AggregateRequest(
                 metrics = setOf(TotalCaloriesBurnedRecord.ENERGY_TOTAL),
-                timeRangeFilter = TimeRangeFilter.between(startTime, Instant.now()),
+                timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
             )
-        )[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories
+        )[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories
 
     // VITALS
 

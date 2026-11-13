@@ -6,7 +6,7 @@
     <string name="ghc_range_error_service_unavailable">Service Unavailable</string>
     <string name="health_permissions_title">Health data permissions</string>
     <string name="health_permissions_message">There is need to health data usage permissions to app work.</string>
-    <string name="health_permissions_data_usage">This feature requests read access to steps, heart rate, resting heart rate, blood pressure, distance, and active calories from Health Connect. Heart rate and resting heart rate data are used to display summaries for yesterday and the last 12 months. The 12-month summaries also need access to older health data.</string>
+    <string name="health_permissions_data_usage">This feature requests read access to steps, heart rate, resting heart rate, blood pressure, distance, floors climbed, active calories, and total calories from Health Connect. Heart rate, resting heart rate, and activity totals are used to display summaries for yesterday and the last 12 months. The 12-month summaries also need access to older health data.</string>
     <string name="health_permissions_choice">You choose which permissions to allow in Health Connect. You can change or revoke access at any time in Health Connect settings. Without access, this feature cannot show your health summary.</string>
     <string name="health_permissions_continue">Continue</string>
     <string name="health_permissions_not_now">Not now</string>
@@ -25,7 +25,10 @@
     <string name="record_description_measurements_count">"Measurements count:"</string>
     <string name="total_calories_burned">Total calories burned</string>
     <string name="active_calories_burned">Active calories burned</string>
-    <string name="floors">Floors"</string>
-    <string name="distance">Distance"</string>
-    <string name="steps">Steps"</string>
+    <string name="floors">Floors</string>
+    <string name="distance">Distance</string>
+    <string name="steps">Steps</string>
+    <string name="unit_kilocalories">kcal</string>
+    <string name="unit_meters">m</string>
+    <string name="missing_data">data unavailable</string>
 </resources>

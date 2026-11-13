@@ -62,7 +62,6 @@ fun StepsTrailingIcon(modifier: Modifier = Modifier){
         contentDescription = "Footprint image",
         tint = Color.White,
         modifier = modifier
-            .size(48.dp)
     )
 }
 
@@ -73,6 +72,5 @@ fun FireTrailingIcon(modifier: Modifier = Modifier){
         contentDescription = "Footprint image",
         tint = Color.White,
         modifier = modifier
-            .size(48.dp)
     )
 }
