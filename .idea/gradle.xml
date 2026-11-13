@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/feature-ghcrange" />
             <option value="$PROJECT_DIR$/feature-ghcrange-mobile" />
             <option value="$PROJECT_DIR$/feature-ghcrange-mobile-api" />
+            <option value="$PROJECT_DIR$/feature-login-mobile" />
             <option value="$PROJECT_DIR$/feature-maplibremaps" />
             <option value="$PROJECT_DIR$/feature-maplibremaps-api" />
           </set>

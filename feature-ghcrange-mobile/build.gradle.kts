@@ -35,7 +35,7 @@ dependencies {
     implementation(project(":core-common"))
 
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.compose.material3.window.size.class1)
+    implementation(libs.androidx.compose.material3.window.size.cls)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
 

@@ -16,10 +16,16 @@
     <string name="health_permissions_leave">Go back</string>
     <string name="record_heart_rate_section_description">"Heart Rate"</string>
     <string name="record_resting_heart_rate_section_description">Resting Heart Rate</string>
+    <string name="record_life_parameters_section_description">Life Parameters</string>
     <string name="period_description_yesterday">"yesterday"</string>
     <string name="period_description_last_year">Last 12 months</string>
     <string name="record_description_min_heart_rate">"Min:"</string>
     <string name="record_description_max_heart_rate">"Max:"</string>
     <string name="record_description_avg_heart_rate">"Average:"</string>
     <string name="record_description_measurements_count">"Measurements count:"</string>
+    <string name="total_calories_burned">Total calories burned</string>
+    <string name="active_calories_burned">Active calories burned</string>
+    <string name="floors">Floors"</string>
+    <string name="distance">Distance"</string>
+    <string name="steps">Steps"</string>
 </resources>

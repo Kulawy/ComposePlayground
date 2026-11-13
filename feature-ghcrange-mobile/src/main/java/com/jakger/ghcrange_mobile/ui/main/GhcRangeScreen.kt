@@ -16,6 +16,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,12 +30,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -50,6 +54,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.HealthConnectClient
@@ -69,6 +74,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.jakger.core_common.logging.ComposeLog
 import com.jakger.core_designsystem.ui.components.InfinityTrail
+import com.jakger.feature_ghcrange.model.ui.HealthParametersAggregatedStatsUi
 import com.jakger.feature_ghcrange.model.ui.HeartRateAggregatedStatsUi
 import com.jakger.feature_ghcrange_mobile.R
 import com.jakger.ghcrange_mobile.ui.permissions.PermissionsRationaleContract
@@ -272,75 +278,47 @@ private fun DisplayForm(
                 HeartRateStatistics(state.aggregatedLastYearRestingHeartRate)
             }
         }
-//            items(records) { record ->
-//                OutlinedTextField(
-//                    value = record.value,
-//                    onValueChange = { },
-//                    readOnly = true,
-//                    label = { Text(record.name) },
-//                    modifier = Modifier.fillMaxWidth(),
-//                    singleLine = true,
-//                    shape = MaterialTheme.shapes.medium
-//                )
-//            }
-
-//            OutlinedTextField(
-//                value = "email",
-//                onValueChange = { },
-//                readOnly = true,
-//                label = { Text("Adres e-mail") },
-//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-//                modifier = Modifier.fillMaxWidth(),
-//                singleLine = true,
-//                shape = MaterialTheme.shapes.medium
-//            )
-
-        // Pole: Hasło
-//                OutlinedTextField(
-//                    value = "password",
-//                    onValueChange = {  },
-//                    label = { "Hasło" },
-//                    leadingIcon = {
-//                        Icon(Icons.Default.Lock, contentDescription = "Hasło")
-//                    },
-//                    trailingIcon = {
-//                        val image = if (passwordVisible)
-//                            Icons.Filled.Visibility
-//                        else
-//                            Icons.Filled.VisibilityOff
-//                    },
-//                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-//                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-//                    modifier = Modifier.fillMaxWidth(),
-//                    singleLine = true,
-//                    shape = MaterialTheme.shapes.medium
-//                ){
-//                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-//                        Icon(imageVector = image, contentDescription = "Pokaż/ukryj hasło")
-//                    }
-//                }
+        item(key = "resting_life_parameters_yesterday") {
+            RecordLifeStyleParametersStatusCardItem(
+                title = stringResource(R.string.record_life_parameters_section_description),
+                periodDescription = stringResource(R.string.period_description_yesterday),
+            ) {
+                LifeParametersSection(state.healthParametersYesterday)
+            }
+        }
+        item(key = "resting_life_parameters_last_year") {
+            RecordLifeStyleParametersStatusCardItem(
+                title = stringResource(R.string.record_life_parameters_section_description),
+                periodDescription = stringResource(R.string.period_description_last_year),
+            ) {
+                LifeParametersSection(state.healthParametersLastYear)
+            }
+        }
     }
 }
 
 @Composable
 private fun HeartRateCard(
+    modifier: Modifier = Modifier,
     title: String,
     periodDescription: String,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     ElevatedCard(
-        modifier = Modifier
+        modifier = modifier
             .padding(top = dimensionResource(dsDim.margin_16))
             .fillMaxWidth()
             .wrapContentHeight(),
         shape = MaterialTheme.shapes.extraLarge,
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 64.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.8f)
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f)
         ),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(dimensionResource(dsDim.margin_16)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(dsDim.margin_16)),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -368,11 +346,23 @@ private fun ColumnScope.HeartRateStatistics(stats: HeartRateAggregatedStatsUi) {
     val rowModifier = Modifier
         .padding(horizontal = dimensionResource(dsDim.margin_16))
         .fillMaxWidth()
-    RecordCardItem(rowModifier, stringResource(R.string.record_description_avg_heart_rate), stats.avgBpm)
+    RecordCardItem(
+        rowModifier,
+        stringResource(R.string.record_description_avg_heart_rate),
+        stats.avgBpm
+    )
     RecordCardItemDivider()
-    RecordCardItem(rowModifier, stringResource(R.string.record_description_max_heart_rate), stats.maxBpm)
+    RecordCardItem(
+        rowModifier,
+        stringResource(R.string.record_description_max_heart_rate),
+        stats.maxBpm
+    )
     RecordCardItemDivider()
-    RecordCardItem(rowModifier, stringResource(R.string.record_description_min_heart_rate), stats.minBpm)
+    RecordCardItem(
+        rowModifier,
+        stringResource(R.string.record_description_min_heart_rate),
+        stats.minBpm
+    )
     RecordCardItemDivider()
     RecordCardItem(
         modifier = rowModifier.padding(bottom = dimensionResource(dsDim.margin_16)),
@@ -393,7 +383,7 @@ private fun DisplayErrorCard(
             .fillMaxWidth(fraction = 0.9f),
         shape = MaterialTheme.shapes.extraLarge,
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer
+            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f)
         ),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 16.dp)
     ) {
@@ -437,6 +427,112 @@ private fun DisplayErrorCard(
                 .padding(horizontal = 16.dp),
         ) { Text(stringResource(R.string.health_permissions_leave)) }
     }
+}
+
+@Composable
+fun RecordLifeStyleParametersStatusCardItem(
+    modifier: Modifier = Modifier,
+    title: String,
+    periodDescription: String,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    OutlinedCard(
+        modifier = modifier
+            .padding(top = dimensionResource(dsDim.margin_16))
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(
+            width = 2.dp,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.8f)
+        ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(dsDim.margin_16)),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title.uppercase(),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = periodDescription.uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+        RecordCardItemDivider()
+        content()
+    }
+}
+
+@Composable
+private fun ColumnScope.LifeParametersSection(
+    lifeParametersState: HealthParametersAggregatedStatsUi
+) {
+    val rowModifier = Modifier
+        .padding(horizontal = dimensionResource(dsDim.margin_16))
+        .fillMaxWidth()
+    OutlinedTextField(
+        value = lifeParametersState.totalCaloriesBurned,
+        onValueChange = { },
+        readOnly = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        label = { Text(stringResource(R.string.total_calories_burned)) },
+        modifier = rowModifier,
+        singleLine = true,
+        shape = MaterialTheme.shapes.medium
+    )
+    RecordCardItemDivider()
+    OutlinedTextField(
+        value = lifeParametersState.activeCaloriesBurned,
+        onValueChange = { },
+        readOnly = true,
+        label = { Text(stringResource(R.string.active_calories_burned)) },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = rowModifier,
+        singleLine = true,
+        shape = MaterialTheme.shapes.medium
+    )
+    RecordCardItemDivider()
+    OutlinedTextField(
+        value = lifeParametersState.floors,
+        onValueChange = { },
+        readOnly = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        label = { Text(stringResource(R.string.floors)) },
+        modifier = rowModifier,
+        singleLine = true,
+        shape = MaterialTheme.shapes.medium
+    )
+    RecordCardItemDivider()
+    OutlinedTextField(
+        value = lifeParametersState.distance,
+        onValueChange = { },
+        readOnly = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        label = { Text(stringResource(R.string.distance)) },
+        modifier = rowModifier,
+        singleLine = true,
+        shape = MaterialTheme.shapes.medium
+    )
+    RecordCardItemDivider()
+    OutlinedTextField(
+        value = lifeParametersState.steps,
+        onValueChange = { },
+        readOnly = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        label = { Text(stringResource(R.string.steps)) },
+        modifier = rowModifier,
+        singleLine = true,
+        shape = MaterialTheme.shapes.medium
+    )
 }
 
 @Composable

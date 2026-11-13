@@ -5,9 +5,11 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.FloorsClimbedRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import com.jakger.core_arch.di.IoDispatcher
@@ -60,17 +62,36 @@ class HealthConnectAggregatedDataSource @Inject constructor(
             )
         )
 
+    suspend fun getFloorsClimbedRecord(startTime: Instant, endTime: Instant) =
+        healthConnectClient.aggregate(
+            AggregateRequest(
+                metrics = setOf(FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL),
+                timeRangeFilter = TimeRangeFilter.between(
+                    startTime = startTime,
+                    endTime = endTime
+                )
+            )
+        )
+
     suspend fun getActiveCaloriesBurned(startTime: Instant, endTime: Instant) =
         healthConnectClient.aggregate(
             AggregateRequest(
                 metrics = setOf(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
                 timeRangeFilter = TimeRangeFilter.between(startTime, Instant.now()),
             )
-        )[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories ?: 0.0
+        )[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories
+
+    suspend fun getTotalCaloriesBurned(startTime: Instant, endTime: Instant) =
+        healthConnectClient.aggregate(
+            AggregateRequest(
+                metrics = setOf(TotalCaloriesBurnedRecord.ENERGY_TOTAL),
+                timeRangeFilter = TimeRangeFilter.between(startTime, Instant.now()),
+            )
+        )[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories
 
     // VITALS
 
-    suspend fun getBloodPressure(startTime: Instant, endTime: Instant) =
+    suspend fun getSystolicAverageBloodPressure(startTime: Instant, endTime: Instant) =
         healthConnectClient.aggregate(
             AggregateRequest(
                 metrics = setOf(BloodPressureRecord.SYSTOLIC_AVG),

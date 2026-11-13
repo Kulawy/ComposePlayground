@@ -2,6 +2,7 @@ package com.jakger.ghcrange_mobile.ui.main
 
 import androidx.compose.runtime.Stable
 import com.jakger.core_arch.mvi.UiState
+import com.jakger.feature_ghcrange.model.ui.HealthParametersAggregatedStatsUi
 import com.jakger.feature_ghcrange.model.ui.HeartRateAggregatedStatsUi
 
 sealed interface GhcRangeUiState : UiState {
@@ -28,6 +29,8 @@ sealed interface GhcRangeUiState : UiState {
         val aggregatedLastYearHeartRate: HeartRateAggregatedStatsUi,
         val aggregatedYesterdayRestingHeartRate: HeartRateAggregatedStatsUi,
         val aggregatedLastYearRestingHeartRate: HeartRateAggregatedStatsUi,
+        val healthParametersYesterday: HealthParametersAggregatedStatsUi,
+        val healthParametersLastYear: HealthParametersAggregatedStatsUi,
     ) : GhcRangeUiState
 }
 
